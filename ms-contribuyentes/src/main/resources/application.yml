@@ -1,0 +1,23 @@
+server:
+  port: 8081
+  address: ${SERVER_ADDRESS:127.0.0.1}
+spring:
+  application:
+    name: ms-contribuyentes
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health
+  endpoint:
+    health:
+      show-details: never
+sri:
+  base-url: ${SRI_BASE_URL:https://srienlinea.sri.gob.ec}
+
+logging:
+  level:
+    root: INFO
+    org.springframework.web: 'OFF'
+    reactor.netty: WARN
+    io.lettuce.core: WARN

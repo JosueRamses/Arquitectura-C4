@@ -1,0 +1,5 @@
+flowchart LR
+ gateway[API Gateway] --> controller[VehiculoController]
+ controller --> service[VehiculoService]
+ service -->|HTTPS REST| client[SriClient]
+ client --> external[SRI]

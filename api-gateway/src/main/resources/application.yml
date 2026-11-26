@@ -1,0 +1,42 @@
+server:
+  port: 8080
+  address: ${SERVER_ADDRESS:127.0.0.1}
+spring:
+  application:
+    name: api-gateway
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health
+  endpoint:
+    health:
+      show-details: never
+spring.cloud.gateway.server.webflux:
+  routes:
+    - id: contribuyentes
+      uri: ${CONTRIBUYENTES_URL:http://localhost:8081}
+      predicates:
+        - Path=/api/contribuyentes/**
+    - id: vehiculos
+      uri: ${VEHICULOS_URL:http://localhost:8082}
+      predicates:
+        - Path=/api/vehiculos/**
+    - id: licencias
+      uri: ${LICENCIAS_URL:http://localhost:8083}
+      predicates:
+        - Path=/api/licencias/**
+  globalcors:
+    cors-configurations:
+      '[/**]':
+        allowedOrigins:
+          - ${FRONTEND_ORIGIN:http://localhost:4200}
+        allowedMethods: [POST, GET, OPTIONS]
+        allowedHeaders: [Content-Type]
+
+logging:
+  level:
+    root: INFO
+    org.springframework.web: 'OFF'
+    reactor.netty: WARN
+    io.lettuce.core: WARN

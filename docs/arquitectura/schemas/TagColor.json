@@ -1,0 +1,20 @@
+{
+  "$id": "https://api.icepanel.io/v1/schemas/TagColor",
+  "enum": [
+    "blue",
+    "green",
+    "emerald",
+    "yellow",
+    "amber",
+    "orange",
+    "red",
+    "beaver",
+    "dark-blue",
+    "purple",
+    "pink",
+    "white",
+    "grey",
+    "black"
+  ],
+  "type": "string"
+}

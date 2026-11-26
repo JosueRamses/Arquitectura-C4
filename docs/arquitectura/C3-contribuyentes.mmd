@@ -1,0 +1,5 @@
+flowchart LR
+ gateway[API Gateway] --> controller[ContribuyenteController]
+ controller --> service[ContribuyenteService]
+ service -->|HTTPS REST| client[SriClient]
+ client --> external[SRI]

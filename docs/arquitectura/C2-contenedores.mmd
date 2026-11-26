@@ -1,0 +1,12 @@
+flowchart LR
+ ciudadano[Ciudadano] --> frontend[Angular · 4200]
+ subgraph consulta[Sistema Consulta Ciudadana]
+ frontend --> gateway[Spring Cloud Gateway · 8080]
+ gateway --> contribuyentes[Contribuyentes · 8081]
+ gateway --> vehiculos[Vehículos · 8082]
+ gateway --> licencias[Licencias · 8083]
+ licencias --> redis[(Redis Cloud · TLS)]
+ end
+ contribuyentes --> sri[SRI]
+ vehiculos --> sri
+ licencias --> ant[ANT]

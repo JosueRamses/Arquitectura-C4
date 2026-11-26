@@ -1,0 +1,272 @@
+{
+  "namespace": "consulta-ciudadana-sri-ant",
+  "modelObjects": [
+    {
+      "id": "domain-consulta",
+      "name": "Consulta Ciudadana",
+      "type": "domain"
+    },
+    {
+      "id": "ciudadano",
+      "name": "Ciudadano",
+      "type": "actor",
+      "parentId": "domain-consulta"
+    },
+    {
+      "id": "consulta",
+      "name": "Sistema Consulta Ciudadana",
+      "type": "system",
+      "parentId": "domain-consulta"
+    },
+    {
+      "id": "sri",
+      "name": "SRI",
+      "type": "system",
+      "parentId": "domain-consulta"
+    },
+    {
+      "id": "ant",
+      "name": "ANT",
+      "type": "system",
+      "parentId": "domain-consulta"
+    },
+    {
+      "id": "frontend",
+      "name": "Frontend Angular",
+      "type": "app",
+      "parentId": "consulta"
+    },
+    {
+      "id": "gateway",
+      "name": "API Gateway · Spring Cloud",
+      "type": "app",
+      "parentId": "consulta"
+    },
+    {
+      "id": "contribuyentes",
+      "name": "Microservicio contribuyentes",
+      "type": "app",
+      "parentId": "consulta"
+    },
+    {
+      "id": "vehiculos",
+      "name": "Microservicio vehículos",
+      "type": "app",
+      "parentId": "consulta"
+    },
+    {
+      "id": "licencias",
+      "name": "Microservicio licencias",
+      "type": "app",
+      "parentId": "consulta"
+    },
+    {
+      "id": "redis",
+      "name": "Redis Cloud · TLS",
+      "type": "store",
+      "parentId": "consulta"
+    },
+    {
+      "id": "contribuyentes-ContribuyenteController",
+      "name": "ContribuyenteController",
+      "type": "component",
+      "parentId": "contribuyentes"
+    },
+    {
+      "id": "contribuyentes-ContribuyenteService",
+      "name": "ContribuyenteService",
+      "type": "component",
+      "parentId": "contribuyentes"
+    },
+    {
+      "id": "contribuyentes-SriClient",
+      "name": "SriClient",
+      "type": "component",
+      "parentId": "contribuyentes"
+    },
+    {
+      "id": "vehiculos-VehiculoController",
+      "name": "VehiculoController",
+      "type": "component",
+      "parentId": "vehiculos"
+    },
+    {
+      "id": "vehiculos-VehiculoService",
+      "name": "VehiculoService",
+      "type": "component",
+      "parentId": "vehiculos"
+    },
+    {
+      "id": "vehiculos-SriClient",
+      "name": "SriClient",
+      "type": "component",
+      "parentId": "vehiculos"
+    },
+    {
+      "id": "licencias-LicenciaController",
+      "name": "LicenciaController",
+      "type": "component",
+      "parentId": "licencias"
+    },
+    {
+      "id": "licencias-LicenciaService",
+      "name": "LicenciaService",
+      "type": "component",
+      "parentId": "licencias"
+    },
+    {
+      "id": "licencias-AntClient",
+      "name": "AntClient",
+      "type": "component",
+      "parentId": "licencias"
+    },
+    {
+      "id": "licencias-RedisCacheRepository",
+      "name": "RedisCacheRepository",
+      "type": "component",
+      "parentId": "licencias"
+    }
+  ],
+  "modelConnections": [
+    {
+      "id": "conn-ciudadano-frontend",
+      "originId": "ciudadano",
+      "targetId": "frontend",
+      "name": "Consulta mediante navegador",
+      "direction": "outgoing"
+    },
+    {
+      "id": "conn-frontend-gateway",
+      "originId": "frontend",
+      "targetId": "gateway",
+      "name": "HTTP JSON · /api",
+      "direction": "outgoing"
+    },
+    {
+      "id": "conn-gateway-contribuyentes",
+      "originId": "gateway",
+      "targetId": "contribuyentes",
+      "name": "HTTP JSON",
+      "direction": "outgoing"
+    },
+    {
+      "id": "conn-gateway-vehiculos",
+      "originId": "gateway",
+      "targetId": "vehiculos",
+      "name": "HTTP JSON",
+      "direction": "outgoing"
+    },
+    {
+      "id": "conn-gateway-licencias",
+      "originId": "gateway",
+      "targetId": "licencias",
+      "name": "HTTP JSON",
+      "direction": "outgoing"
+    },
+    {
+      "id": "conn-contribuyentes-sri",
+      "originId": "contribuyentes",
+      "targetId": "sri",
+      "name": "HTTPS REST · contribuyentes",
+      "direction": "outgoing"
+    },
+    {
+      "id": "conn-vehiculos-sri",
+      "originId": "vehiculos",
+      "targetId": "sri",
+      "name": "HTTPS REST · vehículos y rubros",
+      "direction": "outgoing"
+    },
+    {
+      "id": "conn-licencias-ant",
+      "originId": "licencias",
+      "targetId": "ant",
+      "name": "HTTPS HTML · timeout 5 s",
+      "direction": "outgoing"
+    },
+    {
+      "id": "conn-licencias-redis",
+      "originId": "licencias",
+      "targetId": "redis",
+      "name": "TLS · HMAC SHA256 · respaldo 24 h",
+      "direction": "outgoing"
+    },
+    {
+      "id": "conn-contribuyentes-ContribuyenteController-contribuyentes-ContribuyenteService",
+      "originId": "contribuyentes-ContribuyenteController",
+      "targetId": "contribuyentes-ContribuyenteService",
+      "name": "DTO validado",
+      "direction": "outgoing"
+    },
+    {
+      "id": "conn-contribuyentes-ContribuyenteService-contribuyentes-SriClient",
+      "originId": "contribuyentes-ContribuyenteService",
+      "targetId": "contribuyentes-SriClient",
+      "name": "Consulta oficial",
+      "direction": "outgoing"
+    },
+    {
+      "id": "conn-contribuyentes-SriClient-sri",
+      "originId": "contribuyentes-SriClient",
+      "targetId": "sri",
+      "name": "HTTPS REST",
+      "direction": "outgoing"
+    },
+    {
+      "id": "conn-vehiculos-VehiculoController-vehiculos-VehiculoService",
+      "originId": "vehiculos-VehiculoController",
+      "targetId": "vehiculos-VehiculoService",
+      "name": "DTO validado",
+      "direction": "outgoing"
+    },
+    {
+      "id": "conn-vehiculos-VehiculoService-vehiculos-SriClient",
+      "originId": "vehiculos-VehiculoService",
+      "targetId": "vehiculos-SriClient",
+      "name": "Consulta oficial",
+      "direction": "outgoing"
+    },
+    {
+      "id": "conn-vehiculos-SriClient-sri",
+      "originId": "vehiculos-SriClient",
+      "targetId": "sri",
+      "name": "HTTPS REST",
+      "direction": "outgoing"
+    },
+    {
+      "id": "conn-licencias-LicenciaController-licencias-LicenciaService",
+      "originId": "licencias-LicenciaController",
+      "targetId": "licencias-LicenciaService",
+      "name": "DTO validado",
+      "direction": "outgoing"
+    },
+    {
+      "id": "conn-licencias-LicenciaService-licencias-AntClient",
+      "originId": "licencias-LicenciaService",
+      "targetId": "licencias-AntClient",
+      "name": "Circuit Breaker · 50%, 30 s",
+      "direction": "outgoing"
+    },
+    {
+      "id": "conn-licencias-LicenciaService-licencias-RedisCacheRepository",
+      "originId": "licencias-LicenciaService",
+      "targetId": "licencias-RedisCacheRepository",
+      "name": "Cache-Aside 15 min · Fallback hasta 24 h",
+      "direction": "outgoing"
+    },
+    {
+      "id": "conn-licencias-RedisCacheRepository-redis",
+      "originId": "licencias-RedisCacheRepository",
+      "targetId": "redis",
+      "name": "GET/SET EX 86400 · claves HMAC",
+      "direction": "outgoing"
+    },
+    {
+      "id": "conn-licencias-AntClient-ant",
+      "originId": "licencias-AntClient",
+      "targetId": "ant",
+      "name": "HTTP + Jsoup · selector verificado requerido",
+      "direction": "outgoing"
+    }
+  ]
+}

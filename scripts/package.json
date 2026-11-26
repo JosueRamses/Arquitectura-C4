@@ -1,0 +1,1 @@
+{"name":"consulta-architecture-tools","private":true,"scripts":{"validate":"node validate-icepanel.cjs"},"devDependencies":{"ajv":"^8.17.1","ajv-formats":"^3.0.1"}}
