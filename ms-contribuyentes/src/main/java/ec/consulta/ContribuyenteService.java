@@ -12,6 +12,6 @@ import com.fasterxml.jackson.databind.JsonNode;import org.springframework.stereo
   if(tipo==null)throw new ApiException(502,"El SRI no informó el tipo de contribuyente.");
   String normalized=Normalizer.normalize(tipo,Normalizer.Form.NFD).replaceAll("\\p{M}","").toUpperCase(java.util.Locale.ROOT);
   if(!normalized.matches("PERSONA[S]? NATURAL(ES)?"))throw new ApiException(422,"La consulta está disponible únicamente para personas naturales.");
-  return new Result(ruc,ruc.substring(0,10),SriClient.text(n,"razonSocial","nombreComercial"),tipo,SriClient.text(n,"estadoContribuyente","estado"),n);
+  return new Result(ruc,ruc.substring(0,10),SriClient.text(n,"razonSocial","nombreComercial"),tipo,SriClient.text(n,"estadoContribuyenteRuc","estadoContribuyente","estado"),n);
  }
 }

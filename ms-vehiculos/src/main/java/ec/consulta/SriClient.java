@@ -9,6 +9,7 @@ import org.springframework.stereotype.Component;import org.springframework.beans
  public JsonNode get(String path,String parameter,String value){
   try {var uri=URI.create(base+path+"?"+parameter+"="+URLEncoder.encode(value,java.nio.charset.StandardCharsets.UTF_8));
    var response=http.send(HttpRequest.newBuilder(uri).timeout(Duration.ofSeconds(10)).header("Accept","application/json").GET().build(),HttpResponse.BodyHandlers.ofString());
+   if(response.statusCode()==204)throw new ApiException(502,"El SRI respondió sin contenido (HTTP 204). No fue posible confirmar la consulta; revisa la placa o inténtalo más tarde.");
    if(response.statusCode()!=200||response.body().length()>2000000)throw new ApiException(503,"El SRI no está disponible.");
    var data=mapper.readTree(response.body());if(data==null||data.isNull())throw new ApiException(503,"El SRI devolvió una respuesta vacía.");return data;
   }catch(ApiException e){throw e;}catch(InterruptedException e){Thread.currentThread().interrupt();throw new ApiException(503,"Consulta interrumpida.");}catch(Exception e){throw new ApiException(503,"No fue posible conectar con el SRI.");}
