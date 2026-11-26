@@ -299,7 +299,7 @@
       "type": "app",
       "parentId": "sys",
       "caption": "Java 21 / Spring Boot 3.5.8 / Maven · HTTP :8082",
-      "description": "Confirma placa, obtiene codigoVehiculo real y consulta rubros; BigDecimal; formatos ambiguos no se suman.",
+      "description": "Confirma la placa según el mensaje oficial del SRI, obtiene codigoVehiculo y consulta rubros. Conserva los datos del vehículo si los rubros responden 204; no inventa un total cero.",
       "labels": {
         "tecnologias": "Spring Boot, Java, Maven",
         "codigo": "ms-vehiculos"
@@ -351,7 +351,7 @@
       "type": "component",
       "parentId": "car",
       "caption": "Lógica de consulta",
-      "description": "Consulta existencia por placa, obtiene codigoVehiculo de la respuesta y consulta rubros con ese código real. Calcula el total con BigDecimal solo si el formato plano es inequívoco; evita duplicados y subtotales. No acredita propiedad del vehículo.",
+      "description": "Consulta existencia por placa, obtiene codigoVehiculo de la respuesta y consulta rubros con ese código real mediante getOptional. HTTP 204 de rubros conserva el vehículo y devuelve total null con aviso explícito. Calcula BigDecimal únicamente en formatos inequívocos, sin duplicados ni subtotales. No acredita propiedad del vehículo.",
       "labels": {
         "tecnologias": "Java",
         "codigo": "ms-vehiculos/src/main/java/ec/consulta/VehiculoService.java"
@@ -376,7 +376,7 @@
       "type": "component",
       "parentId": "car",
       "caption": "Java HttpClient / Jackson",
-      "description": "Cliente HTTPS SRI con timeout y comprobación HTTP/JSON; no registra datos personales.",
+      "description": "Java HttpClient y Jackson. Reconoce el mensaje oficial La placa existe y respuestas booleanas. get exige contenido válido; getOptional permite 204 únicamente para datos opcionales de rubros. No registra datos personales.",
       "labels": {
         "tecnologias": "Java",
         "codigo": "ms-vehiculos/src/main/java/ec/consulta/SriClient.java"
@@ -612,13 +612,6 @@
       "labels": {
         "tecnologias": "Redis"
       },
-      "technologyIds": [
-        "Yj8CPPXztMD4nMBi04y8"
-      ],
-      "icon": {
-        "technologyId": "Yj8CPPXztMD4nMBi04y8"
-      },
-      "external": true,
       "links": [
         {
           "id": "a634fbef7c0b461bca83",
@@ -630,7 +623,14 @@
           "url": "https://github.com/JosueRamses/Arquitectura-C4/blob/main/.env.example",
           "customName": "Plantilla de configuración sin secretos"
         }
-      ]
+      ],
+      "technologyIds": [
+        "Yj8CPPXztMD4nMBi04y8"
+      ],
+      "icon": {
+        "technologyId": "Yj8CPPXztMD4nMBi04y8"
+      },
+      "external": true
     }
   ],
   "modelConnections": [
@@ -926,11 +926,11 @@
       "targetId": "va",
       "name": "Solicita datos oficiales del SRI",
       "direction": "outgoing",
-      "description": "VehiculoService llama a SriClient.get para existencia, datos del vehículo y rubros usando el codigoVehiculo devuelto. Protocolo: Java en proceso.",
+      "description": "VehiculoService llama a SriClient.get para existencia y datos del vehículo; usa getOptional para rubros con el codigoVehiculo recibido. Los rubros vacíos no descartan la información válida del vehículo. Protocolo: Java en proceso.",
       "labels": {
         "vista": "C3",
         "protocolo": "Java en proceso",
-        "responsabilidad": "VehiculoService llama a SriClient.get para existencia, datos del vehículo y rubros usando el codigoVehiculo devuelto.",
+        "responsabilidad": "VehiculoService llama a SriClient.get para existencia y datos del vehículo; usa getOptional para rubros con el codigoVehiculo recibido. Los rubros vacíos no descartan la información válida del vehículo.",
         "tipo": "invocacion"
       },
       "links": [
