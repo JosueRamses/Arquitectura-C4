@@ -2,6 +2,8 @@
 
 Repositorio: [JosueRamses/Arquitectura-C4](https://github.com/JosueRamses/Arquitectura-C4).
 
+Landscape IcePanel existente: [Consulta Ciudadana](https://app.icepanel.io/landscapes/lVKZwtzKhdmHBegF2hOi/versions/latest/model/viewer), ID `lVKZwtzKhdmHBegF2hOi`. Se utiliza exclusivamente este landscape y el repositorio anterior.
+
 Aplicación académica de **ISWZ2202 – Diseño y Arquitectura de Software**, Facultad de Ingeniería y Ciencias Aplicadas. Permite verificar contribuyentes naturales, consultar información vehicular y consultar puntos de licencia mediante fuentes oficiales. Angular utiliza exclusivamente el API Gateway.
 
 ## Arquitectura y tecnologías
@@ -102,7 +104,9 @@ node architecture.cjs
 node validate-icepanel.cjs
 ```
 
-Según la [guía oficial](https://developer.icepanel.io/developer-guide/how-to-guides/import-landscapes), abrir un landscape y elegir **Import model → File Upload**, cargar el JSON y conservar IDs en próximas importaciones. Después crear una vista **Context** con Ciudadano, Consulta Ciudadana, SRI y ANT; crear una vista **App** dentro de Consulta Ciudadana con los seis contenedores; crear tres vistas **Component** dentro de cada microservicio con sus controladores, servicios, clientes y repositorio. Añadir los objetos existentes y sus conexiones, y distribuirlos según los archivos Mermaid. La importación del modelo no crea automáticamente estos diagramas visuales. No se ha creado ni publicado un proyecto remoto IcePanel. Para automatizarlo se necesitan cuenta, landscape y autorización.
+Según la [guía oficial](https://developer.icepanel.io/developer-guide/how-to-guides/import-landscapes), abrir **el landscape existente `lVKZwtzKhdmHBegF2hOi`**, elegir **Import model → File Upload** y cargar `docs/arquitectura/icepanel-import.json`. Conservar los IDs y no usar `prune=true`, que eliminaría objetos ajenos al modelo. Después crear una vista **Context** con Ciudadano, Consulta Ciudadana, SRI y ANT; una vista **App** dentro de Consulta Ciudadana con los seis contenedores; y tres vistas **Component** dentro de cada microservicio con sus componentes y relaciones. Distribuirlos según los archivos Mermaid. Los enlaces de código están incluidos en `links` de los objetos. La importación del modelo no crea automáticamente las vistas visuales.
+
+La conexión oficial MCP de Codex se registra con `codex mcp add icepanel --url https://mcp.icepanel.io/mcp`. Si ya está registrada, usar `codex mcp login icepanel`. Según la [documentación de IcePanel](https://docs.icepanel.io/integrations/mcp-server), MCP requiere un plan de pago y la escritura OAuth puede necesitar habilitarse en **Manage organization → AI → OAuth write access**. Durante la autorización, seleccionar exclusivamente el landscape `lVKZwtzKhdmHBegF2hOi` y pulsar **Allow**. La autorización pertenece al cliente local, no al repositorio; no publicar tokens ni claves. Si MCP no está disponible, puede utilizarse una API key autorizada de IcePanel o la importación manual anterior. No se han creado landscapes adicionales y no se afirma la creación remota de vistas sin confirmación del servidor.
 
 ## Pruebas y estado de entrega
 

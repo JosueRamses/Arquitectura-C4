@@ -42,7 +42,10 @@ function connection(originId, targetId, name, level) {
 object('dom','Consulta ciudadana SRI-ANT','domain',null,'Arquitectura C4','Modelo derivado del código y la configuración efectiva.');
 const citizen = object('user','Ciudadano','actor','dom','Navegador web','Ingresa un correo, RUC natural y placa autorizados. La consulta vehicular no acredita propiedad.');
 const system = object('sys','Consulta Ciudadana','system','dom','Angular + Gateway + tres microservicios','Validación SRI; datos vehiculares y rubros; consulta ANT con caché y resiliencia.');
-if (repository) system.links = [link(repository,'Repositorio GitHub'), link(repository+'/blob/main/README.md','Ejecución y configuración')];
+system.links = [
+  ...(repository ? [link(repository,'Repositorio GitHub'), link(repository+'/blob/main/README.md','Ejecución y configuración')] : []),
+  link('https://app.icepanel.io/landscapes/lVKZwtzKhdmHBegF2hOi/versions/latest/model/viewer','Landscape IcePanel existente')
+];
 const sri = object('sri','SRI','system','dom','Servicio externo HTTPS / REST','Existencia y datos del contribuyente, vehículo y rubros. No se inventan resultados.');
 sri.external = true;
 sri.links = [link('https://srienlinea.sri.gob.ec/','SRI en línea')];
