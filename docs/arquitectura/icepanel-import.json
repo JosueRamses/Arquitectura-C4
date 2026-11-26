@@ -62,9 +62,10 @@
     },
     {
       "id": "redis",
-      "name": "Redis Cloud · TLS",
+      "name": "Redis Cloud DISARQSFT · AWS · 30 MB",
       "type": "store",
-      "parentId": "consulta"
+      "parentId": "consulta",
+      "description": "Servicio Cloud externo. RESP TCP sin TLS, puerto 16824: exclusivamente pruebas sintéticas. Datos personales bloqueados hasta habilitar TLS. Claves HMAC; frescura 15 min; retención máxima 24 h. Credenciales solo en .env ignorado por Git."
     },
     {
       "id": "contribuyentes-ContribuyenteController",
@@ -188,7 +189,7 @@
       "id": "conn-licencias-redis",
       "originId": "licencias",
       "targetId": "redis",
-      "name": "TLS · HMAC SHA256 · respaldo 24 h",
+      "name": "RESP TCP sin TLS: solo sintéticos · HMAC · respaldo 24 h",
       "direction": "outgoing"
     },
     {
@@ -258,7 +259,7 @@
       "id": "conn-licencias-RedisCacheRepository-redis",
       "originId": "licencias-RedisCacheRepository",
       "targetId": "redis",
-      "name": "GET/SET EX 86400 · claves HMAC",
+      "name": "GET/SET · TTL restante hasta 24 h · HMAC · sin TLS solo UUID sintéticos",
       "direction": "outgoing"
     },
     {

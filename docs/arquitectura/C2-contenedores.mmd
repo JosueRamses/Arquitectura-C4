@@ -5,7 +5,7 @@ flowchart LR
  gateway --> contribuyentes[Contribuyentes · 8081]
  gateway --> vehiculos[Vehículos · 8082]
  gateway --> licencias[Licencias · 8083]
- licencias --> redis[(Redis Cloud · TLS)]
+ licencias -->|Sin TLS: solo sintéticos| redis[(Redis Cloud DISARQSFT · AWS · 30 MB)]
  end
  contribuyentes --> sri[SRI]
  vehiculos --> sri

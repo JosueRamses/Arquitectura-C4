@@ -17,7 +17,7 @@ flowchart LR
  gateway --> contribuyentes[Contribuyentes · 8081]
  gateway --> vehiculos[Vehículos · 8082]
  gateway --> licencias[Licencias · 8083]
- licencias --> redis[(Redis Cloud · TLS)]
+ licencias -->|Sin TLS: solo sintéticos| redis[(Redis Cloud DISARQSFT · AWS · 30 MB)]
  end
  contribuyentes --> sri[SRI]
  vehiculos --> sri
@@ -53,5 +53,5 @@ flowchart LR
  service -->|Circuit Breaker 50% · 30 s| client[AntClient]
  client --> external[ANT · Jsoup · timeout 5 s]
  service -->|Cache-Aside 15 min · Fallback 24 h| cache[RedisCacheRepository]
- cache -->|HMAC · TLS · TTL 24 h| redis[(Redis Cloud)]
+ cache -->|HMAC · TTL restante 24 h · sin TLS solo sintéticos| redis[(Redis Cloud DISARQSFT · AWS)]
 ```

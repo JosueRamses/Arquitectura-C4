@@ -11,7 +11,7 @@ Aplicación académica de **ISWZ2202 – Diseño y Arquitectura de Software**, F
 | Contribuyentes | Spring MVC, Java HttpClient, Jakarta Validation | 8081 |
 | Vehículos | Spring MVC, cálculo decimal conservador | 8082 |
 | Licencias | Jsoup, Resilience4j, Spring Data Redis / Lettuce | 8083 |
-| Caché externa | Redis Cloud con TLS y claves HMAC-SHA256 | Configurable |
+| Caché externa | Redis Cloud DISARQSFT, AWS, 30 MB; claves HMAC-SHA256 | 16824 |
 
 Cada servicio tiene su propio `pom.xml` y puede compilarse independientemente. El POM de la raíz permite compilar los cuatro juntos. Diagramas C1, C2 y tres C3: [docs/arquitectura/diagramas.md](docs/arquitectura/diagramas.md).
 
@@ -41,9 +41,19 @@ Con Docker, tras configurar `.env`: `docker compose up --build`. Redis sigue sie
 
 ## Redis Cloud y privacidad
 
-Configurar `REDIS_HOST`, `REDIS_PORT`, `REDIS_USERNAME`, `REDIS_PASSWORD`, `REDIS_SSL=true` y `CACHE_HMAC_SECRET` (secreto aleatorio de al menos 32 caracteres). Usar el endpoint TLS del proveedor, su CA válida y el puerto que indique Redis Cloud. No desactivar la validación de certificados.
+La instancia DISARQSFT está alojada en AWS, tiene 30 MB y usa el puerto 16824. Su endpoint y credenciales se guardan únicamente en `.env`, excluido de Git. La configuración actual es `REDIS_SSL=false`: solo se permite escribir y leer datos sintéticos de pruebas. Para puntos vinculados a personas reales se exige configurar TLS en Redis Cloud y `REDIS_SSL=true`, con certificado válido y el puerto TLS del proveedor.
 
-Sin configuración completa o sin TLS el repositorio de caché queda deshabilitado. La aplicación continúa mostrando indisponibilidad o respuestas oficiales disponibles. `/actuator/health` mide la vida del servicio, no confirma la disponibilidad de ANT o de Redis. El estado de ANT se informa en cada consulta de licencia.
+Configurar `REDIS_HOST`, `REDIS_PORT`, `REDIS_USERNAME`, `REDIS_PASSWORD`, `REDIS_SSL` y `CACHE_HMAC_SECRET`. Se generó localmente una clave HMAC con 48 bytes aleatorios (384 bits), sin publicarla. Para regenerarla sin mostrarla: ejecutar `./scripts/configure-hmac.ps1`; conserva la existente salvo que se indique `-Rotate`. Rotar el secreto cambia las claves y deja inaccesibles los respaldos previos hasta que expiren.
+
+Sin configuración completa el repositorio queda deshabilitado. Sin TLS rechaza identificadores personales **antes de cualquier operación Redis**; únicamente acepta en tests el formato reservado `synthetic:UUID`, con namespace separado `licencia:test:v1:`. El controlador público solo acepta RUC válidos y no admite esos identificadores sintéticos. Las respuestas reales de ANT pueden mostrarse sin almacenarse; el mensaje informa el bloqueo del respaldo por ausencia de TLS. `/actuator/health` mide la vida del servicio, no confirma la disponibilidad de ANT o de Redis.
+
+Para repetir las pruebas reales de conexión y resiliencia con datos sintéticos:
+
+```powershell
+.\scripts\verify-redis.ps1
+```
+
+Estas pruebas verifican PING/PONG, escritura y lectura de cero puntos, expiración real de una clave a los 3 segundos, TTL de respaldo de 24 horas, Cache-Aside, actualización, Fallback desde Redis real tras fallos simulados de ANT y apertura real del Circuit Breaker. La retención de 3 segundos se inyecta exclusivamente en el test; producción conserva 24 horas. Se usan UUID aleatorios sin datos personales y se eliminan solo las claves sintéticas creadas por la prueba, sin usar FLUSHDB. El fallo ANT se simula únicamente en el test; no se modifica el endpoint normal. Estas tres pruebas reales aprobaron el 26/11/2026.
 
 Las claves son `licencia:v1:<HMAC-SHA256(cédula)>`; el valor contiene únicamente puntos y fecha de obtención. El correo no se guarda ni envía a terceros. La caché no guarda la cédula en claro. No habilitar logs HTTP de depuración sobre datos personales.
 
@@ -64,7 +74,7 @@ Endpoints propios: `POST /api/contribuyentes/consultar` (`correo`, `ruc`), `POST
 
 ## Resiliencia
 
-`LicenciaService` implementa Cache-Aside: primero lee Redis. Los datos menores de 15 minutos se devuelven sin contactar ANT. Tras ese tiempo intenta actualizar mediante Circuit Breaker (50 % de errores, ventana de 10 llamadas, mínimo 4 llamadas, circuito abierto 30 segundos). Si falla ANT, devuelve el respaldo con marca de desactualizado hasta cumplir 24 horas. El TTL Redis es **24 horas desde la respuesta válida**, no 15 minutos y no se prolonga al leer. ANT tiene timeout de conexión y de solicitud de 5 segundos. Los errores y HTML inválido nunca se guardan; cero puntos sí es una respuesta válida. Si una lectura viene de caché fresca, el estado de ANT se expresa como no consultado.
+`LicenciaService` implementa Cache-Aside: primero lee Redis. Los datos menores de 15 minutos se devuelven sin contactar ANT. Tras ese tiempo intenta actualizar mediante Circuit Breaker (50 % de errores, ventana de 10 llamadas, mínimo 4 llamadas, circuito abierto 30 segundos). Si falla ANT, devuelve el respaldo con marca de desactualizado hasta cumplir 24 horas. El TTL Redis es **el tiempo restante hasta cumplir 24 horas desde la respuesta válida**, no 15 minutos, y no se prolonga al leer ni al usar fallback. ANT tiene timeout de conexión y de solicitud de 5 segundos. Los errores y HTML inválido nunca se guardan; cero puntos sí es una respuesta válida. Si una lectura viene de caché fresca, el estado de ANT se expresa como no consultado.
 
 ## Arquitectura IcePanel
 
@@ -85,4 +95,6 @@ Ejecutar `mvn verify`, `cd frontend-angular; npm run build`, y desde la raíz `n
 
 Las pruebas controladas cubren persona natural/sociedad, RUC discordante, ausencia de contribuyente, código de vehículo recibido, rubros ambiguos y duplicados, caché fresca, actualización, fallback, expiración de 24 h, apertura del circuito, cero puntos, CAPTCHA y HTML ambiguo. Las fixtures no se utilizan como datos de producción ni se consultan en sistemas oficiales.
 
-**Pendientes externos:** credenciales Redis Cloud y su prueba real; RUC/placa autorizados para verificar formatos y resultados reales del SRI; acceso autorizado al HTML ANT para fijar su selector; autenticación GitHub para publicar el repositorio privado; cuenta/autorización IcePanel si se desea publicación remota. Consulte [docs/pruebas.md](docs/pruebas.md) para la evidencia de esta ejecución.
+**Redis Cloud verificado con datos sintéticos:** PING, escritura, lectura, expiración, Cache-Aside, Circuit Breaker y Fallback reales. Los tests normales incluyen 22 casos locales; las tres pruebas Cloud requieren ejecución explícita y credenciales locales. Modelo C4 actualizado con DISARQSFT/AWS/30 MB, transporte sin TLS limitado a sintéticos y retención máxima de 24 horas; validación oficial mediante `scripts/validate-icepanel.cjs`.
+
+**Pendientes externos:** habilitar TLS para respaldos de personas reales; RUC/placa autorizados para verificar formatos y resultados reales del SRI; acceso autorizado al HTML ANT para fijar su selector; cuenta/autorización IcePanel si se desea publicación remota. No se publican credenciales ni se asegura funcionamiento real de ANT. La evidencia de la ejecución inicial está en [docs/pruebas.md](docs/pruebas.md); los resultados de esta actualización están en este README, sin informes adicionales.
