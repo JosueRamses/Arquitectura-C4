@@ -16,12 +16,25 @@ async function schema(url){
  if(ids.size!==data.modelObjects.length)throw Error('IDs de objetos duplicados');
  if(new Set(data.modelConnections.map(c=>c.id)).size!==data.modelConnections.length)throw Error('IDs de relaciones duplicados');
  const objects=new Map(data.modelObjects.map(o=>[o.id,o]));
+ const domains=data.modelObjects.filter(o=>o.type==='domain');
+ if(domains.length!==1||domains[0].name!=='Consulta Ciudadana SRI-ANT')throw Error('Debe existir únicamente el dominio Consulta Ciudadana SRI-ANT');
+ const names=new Set();
  const parents={actor:['domain'],system:['domain'],app:['system'],store:['system'],component:['app','store'],group:['domain','group']};
  for(const o of data.modelObjects){
+  const identity=[o.parentId||'',o.type,o.name].join('|');
+  if(names.has(identity))throw Error('Objeto duplicado en el mismo padre: '+o.name);
+  names.add(identity);
   if(o.type==='domain'){if(o.parentId)throw Error('Domain debe ser raíz');continue;}
   if(!parents[o.type]?.includes(objects.get(o.parentId)?.type))throw Error('Jerarquía C4 inválida: '+o.id);
  }
- for(const c of data.modelConnections)if(!ids.has(c.originId)||!ids.has(c.targetId))throw Error('Referencia inexistente');
+ const pairs=new Set();
+ for(const c of data.modelConnections){
+  if(!ids.has(c.originId)||!ids.has(c.targetId))throw Error('Referencia inexistente');
+  if(!c.labels?.protocolo||!c.labels?.responsabilidad||!c.description)throw Error('Relación sin protocolo/responsabilidad: '+c.id);
+  const pair=[c.originId,c.targetId,c.labels.vista].join('|');
+  if(pairs.has(pair))throw Error('Relación duplicada: '+c.id);
+  pairs.add(pair);
+ }
  const result={validatedAt:new Date().toISOString(),schema:official.$id,valid:true,objects:data.modelObjects.length,connections:data.modelConnections.length};
- fs.writeFileSync(path.join(dir,'validation.json'),JSON.stringify(result,null,2));console.log(result);
+ console.log(result);
 })().catch(e=>{console.error(e.message);process.exitCode=1;});

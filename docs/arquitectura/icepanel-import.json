@@ -3,10 +3,10 @@
   "modelObjects": [
     {
       "id": "dom",
-      "name": "Consulta ciudadana SRI-ANT",
+      "name": "Consulta Ciudadana SRI-ANT",
       "type": "domain",
-      "caption": "Arquitectura C4",
-      "description": "Modelo derivado del código y la configuración efectiva.",
+      "caption": "Dominio único · Arquitectura C4",
+      "description": "Contiene el ciudadano, el sistema implementado y sus integraciones externas. C1: contexto; C2: contenedores; C3: componentes. Las relaciones agregadas documentan las mismas comunicaciones a distinta escala, sin duplicar llamadas de ejecución.",
       "labels": {
         "tecnologias": "No aplica"
       }
@@ -74,8 +74,8 @@
       "name": "ANT",
       "type": "system",
       "parentId": "dom",
-      "caption": "Portal externo HTTPS / HTML",
-      "description": "Portal oficial de consultas: HTTP 502 confirmado en Edge y cliente HTTP; la web principal ANT responde HTTP 200 y enlaza al mismo portal. El HTTP 401 inicial indicó rechazo de acceso, sin poder determinar su causa interna. Se conserva URL del docente, diagnóstico diferenciado y fallback. Selector real aún sin verificar.",
+      "caption": "Sistema externo · HTTPS / HTML",
+      "description": "Portal oficial de citaciones y puntos de licencia. Integración conservada en la URL del docente; disponibilidad variable. El cliente diferencia restricciones 401/403 y fallos 502. La extracción solo se permite con HTML válido y selector real verificado, todavía no configurado. La aplicación utiliza el respaldo permitido o informa indisponibilidad.",
       "labels": {
         "tecnologias": "No aplica"
       },
@@ -119,8 +119,8 @@
       "name": "API Gateway",
       "type": "app",
       "parentId": "sys",
-      "caption": "Spring Cloud Gateway 2025.0 / Java 21 · HTTP :8080",
-      "description": "Enrutamiento HTTP a tres microservicios, CORS y health. Configuración real en application.yml.",
+      "caption": "Spring Cloud Gateway / Spring Cloud 2025.0 / Java 21 · HTTP :8080",
+      "description": "Enrutamiento HTTP a tres microservicios independientes, CORS y health. Las rutas conservan /api/contribuyentes/**, /api/vehiculos/** y /api/licencias/** sin consumo externo directo desde Angular.",
       "labels": {
         "tecnologias": "Spring Cloud Gateway, Spring Boot, Java",
         "codigo": "api-gateway"
@@ -174,7 +174,7 @@
       "type": "component",
       "parentId": "tax",
       "caption": "REST controller / DTOs / Jakarta Validation",
-      "description": "Recibe POST /api/contribuyentes/consultar; valida entradas y delega al servicio.",
+      "description": "Recibe POST /api/contribuyentes/consultar. Valida correo y RUC natural; delega la verificación al servicio.",
       "labels": {
         "tecnologias": "Spring Boot, Java",
         "codigo": "ms-contribuyentes/src/main/java/ec/consulta/ContribuyenteController.java"
@@ -199,7 +199,7 @@
       "type": "component",
       "parentId": "tax",
       "caption": "Lógica de consulta",
-      "description": "Coordina consultas oficiales, valida la respuesta y devuelve DTOs. No usa fixtures en producción.",
+      "description": "Consulta existencia y datos oficiales SRI; confirma el mismo RUC y tipo PERSONA NATURAL. Devuelve nombre, estadoContribuyenteRuc y demás información disponible; deriva la cédula en el DTO de respuesta.",
       "labels": {
         "tecnologias": "Java",
         "codigo": "ms-contribuyentes/src/main/java/ec/consulta/ContribuyenteService.java"
@@ -326,7 +326,7 @@
       "type": "component",
       "parentId": "car",
       "caption": "REST controller / DTOs / Jakarta Validation",
-      "description": "Recibe POST /api/vehiculos/consultar; valida entradas y delega al servicio.",
+      "description": "Recibe POST /api/vehiculos/consultar. Valida la placa y elimina el guion antes de delegar al servicio.",
       "labels": {
         "tecnologias": "Spring Boot, Java",
         "codigo": "ms-vehiculos/src/main/java/ec/consulta/VehiculoController.java"
@@ -351,7 +351,7 @@
       "type": "component",
       "parentId": "car",
       "caption": "Lógica de consulta",
-      "description": "Coordina consultas oficiales, valida la respuesta y devuelve DTOs. No usa fixtures en producción.",
+      "description": "Consulta existencia por placa, obtiene codigoVehiculo de la respuesta y consulta rubros con ese código real. Calcula el total con BigDecimal solo si el formato plano es inequívoco; evita duplicados y subtotales. No acredita propiedad del vehículo.",
       "labels": {
         "tecnologias": "Java",
         "codigo": "ms-vehiculos/src/main/java/ec/consulta/VehiculoService.java"
@@ -453,7 +453,7 @@
       "type": "component",
       "parentId": "lic",
       "caption": "REST controller / DTOs / Jakarta Validation",
-      "description": "Recibe POST /api/licencias/consultar; valida entradas y delega al servicio.",
+      "description": "Recibe POST /api/licencias/consultar. Valida el RUC natural, deriva la cédula con sus primeros diez dígitos y la entrega al servicio de licencias.",
       "labels": {
         "tecnologias": "Spring Boot, Java",
         "codigo": "ms-licencias/src/main/java/ec/consulta/LicenciaController.java"
@@ -478,7 +478,7 @@
       "type": "component",
       "parentId": "lic",
       "caption": "Resilience4j 2.3.0 / Cache-Aside / Fallback",
-      "description": "Lee Redis antes de ANT. Respuesta válida de cero puntos distinta de error. Ante fallo recupera el respaldo vigente y marca desactualizado; sin respaldo informa indisponibilidad. No prolonga TTL.",
+      "description": "Cache-Aside: consulta el repositorio antes de ANT; devuelve caché fresca hasta 15 min. Circuit Breaker Resilience4j: ventana 10 llamadas, mínimo 4, umbral 50 %, apertura 30 s, dos llamadas en semiabierto. Fallback: recupera la última respuesta válida hasta 24 h y la marca desactualizada; sin respaldo devuelve puntos null e indisponibilidad. Guarda únicamente respuestas válidas, incluido cero; no prolonga TTL.",
       "labels": {
         "tecnologias": "Java, Resilience4j",
         "codigo": "ms-licencias/src/main/java/ec/consulta/LicenciaService.java"
@@ -588,6 +588,11 @@
           "id": "1d2ae0f9a886c4a0fb52",
           "url": "https://github.com/JosueRamses/Arquitectura-C4/blob/main/ms-licencias/src/main/java/ec/consulta/RedisCacheRepository.java",
           "customName": "Código implementado en GitHub"
+        },
+        {
+          "id": "d691c4c1ffe7f174d79e",
+          "url": "https://github.com/JosueRamses/Arquitectura-C4/blob/main/ms-licencias/src/main/java/ec/consulta/CacheRepository.java",
+          "customName": "Interfaz CacheRepository implementada"
         }
       ],
       "technologyIds": [
@@ -603,7 +608,7 @@
       "type": "store",
       "parentId": "sys",
       "caption": "Redis Cloud · AWS · 30 MB · TCP :16824",
-      "description": "Servicio Cloud administrado externo. Configuración actual sin TLS: exclusivamente datos sintéticos. Datos personales bloqueados hasta usar transporte cifrado. Caché fresca 15 min, retención máxima 24 h. Host y secretos solo en .env ignorado por Git.",
+      "description": "Caché administrada externamente que pertenece al sistema lógico Consulta Ciudadana. Configuración actual sin TLS: solo datos sintéticos. Datos personales bloqueados hasta usar transporte cifrado. Vigencia fresca 15 min; respaldo máximo 24 h desde la obtención. Claves HMAC-SHA256; valor limitado a puntos y fecha. Host y secretos solo en .env ignorado por Git.",
       "labels": {
         "tecnologias": "Redis"
       },
@@ -612,7 +617,20 @@
       ],
       "icon": {
         "technologyId": "Yj8CPPXztMD4nMBi04y8"
-      }
+      },
+      "external": true,
+      "links": [
+        {
+          "id": "a634fbef7c0b461bca83",
+          "url": "https://github.com/JosueRamses/Arquitectura-C4/blob/main/ms-licencias/src/main/resources/application.yml",
+          "customName": "Configuración Redis por variables de entorno"
+        },
+        {
+          "id": "1d4312b2e7d2313eb173",
+          "url": "https://github.com/JosueRamses/Arquitectura-C4/blob/main/.env.example",
+          "customName": "Plantilla de configuración sin secretos"
+        }
+      ]
     }
   ],
   "modelConnections": [
@@ -620,311 +638,812 @@
       "id": "conn-gateway-tax",
       "originId": "gateway",
       "targetId": "tax",
-      "name": "POST JSON · ruta /api correspondiente",
+      "name": "Enruta POST /api/contribuyentes/consultar",
       "direction": "outgoing",
+      "description": "Conserva la ruta y reenvía la consulta al microservicio correspondiente; propaga la respuesta JSON. Relación agregada de la vista C2; no representa una llamada adicional a las detalladas en niveles inferiores. Protocolo: HTTP / JSON · puerto 8081.",
       "labels": {
-        "vista": "C2"
-      }
+        "vista": "C2",
+        "protocolo": "HTTP / JSON · puerto 8081",
+        "responsabilidad": "Conserva la ruta y reenvía la consulta al microservicio correspondiente; propaga la respuesta JSON.",
+        "tipo": "agregacion C4"
+      },
+      "links": [
+        {
+          "id": "85fe97aeae33090b9584",
+          "url": "https://github.com/JosueRamses/Arquitectura-C4/blob/main/api-gateway/src/main/resources/application.yml",
+          "customName": "Implementación de la comunicación"
+        },
+        {
+          "id": "661583d261d0e640a288",
+          "url": "https://github.com/JosueRamses/Arquitectura-C4/blob/main/ms-contribuyentes/src/main/java/ec/consulta/ContribuyenteController.java",
+          "customName": "Implementación de la comunicación"
+        }
+      ]
     },
     {
       "id": "conn-gateway-tc",
       "originId": "gateway",
       "targetId": "tc",
-      "name": "HTTP JSON · entrada al controlador",
+      "name": "POST /api/contribuyentes/consultar",
       "direction": "outgoing",
+      "description": "La ruta del Gateway entrega la solicitud al controlador REST anotado con @PostMapping; el microservicio valida su DTO. Protocolo: HTTP / JSON · puerto 8081.",
       "labels": {
-        "vista": "C3"
-      }
+        "vista": "C3",
+        "protocolo": "HTTP / JSON · puerto 8081",
+        "responsabilidad": "La ruta del Gateway entrega la solicitud al controlador REST anotado con @PostMapping; el microservicio valida su DTO.",
+        "tipo": "invocacion"
+      },
+      "links": [
+        {
+          "id": "85fe97aeae33090b9584",
+          "url": "https://github.com/JosueRamses/Arquitectura-C4/blob/main/api-gateway/src/main/resources/application.yml",
+          "customName": "Implementación de la comunicación"
+        },
+        {
+          "id": "661583d261d0e640a288",
+          "url": "https://github.com/JosueRamses/Arquitectura-C4/blob/main/ms-contribuyentes/src/main/java/ec/consulta/ContribuyenteController.java",
+          "customName": "Implementación de la comunicación"
+        }
+      ]
     },
     {
       "id": "conn-tc-ts",
       "originId": "tc",
       "targetId": "ts",
-      "name": "DTO de solicitud validado",
+      "name": "Invoca consultar con entrada validada",
       "direction": "outgoing",
+      "description": "El controlador llama a service.consultar con el RUC validado. Protocolo: Java en proceso / DTO.",
       "labels": {
-        "vista": "C3"
-      }
+        "vista": "C3",
+        "protocolo": "Java en proceso / DTO",
+        "responsabilidad": "El controlador llama a service.consultar con el RUC validado.",
+        "tipo": "invocacion"
+      },
+      "links": [
+        {
+          "id": "661583d261d0e640a288",
+          "url": "https://github.com/JosueRamses/Arquitectura-C4/blob/main/ms-contribuyentes/src/main/java/ec/consulta/ContribuyenteController.java",
+          "customName": "Implementación de la comunicación"
+        },
+        {
+          "id": "0d054c350c2ca1de0810",
+          "url": "https://github.com/JosueRamses/Arquitectura-C4/blob/main/ms-contribuyentes/src/main/java/ec/consulta/ContribuyenteService.java",
+          "customName": "Implementación de la comunicación"
+        }
+      ]
     },
     {
       "id": "conn-tc-tax-input",
       "originId": "tc",
       "targetId": "tax-input",
-      "name": "Valida RUC y deriva cédula natural",
+      "name": "Valida el RUC natural",
       "direction": "outgoing",
+      "description": "Invoca Input.requireRuc: comprueba longitud, provincia, tercer dígito, sufijo 001 y dígito verificador de cédula. La derivación de cédula ocurre fuera de Input. Protocolo: Java en proceso / llamada estática.",
       "labels": {
-        "vista": "C3"
-      }
+        "vista": "C3",
+        "protocolo": "Java en proceso / llamada estática",
+        "responsabilidad": "Invoca Input.requireRuc: comprueba longitud, provincia, tercer dígito, sufijo 001 y dígito verificador de cédula. La derivación de cédula ocurre fuera de Input.",
+        "tipo": "invocacion"
+      },
+      "links": [
+        {
+          "id": "661583d261d0e640a288",
+          "url": "https://github.com/JosueRamses/Arquitectura-C4/blob/main/ms-contribuyentes/src/main/java/ec/consulta/ContribuyenteController.java",
+          "customName": "Implementación de la comunicación"
+        },
+        {
+          "id": "3089c75ac6a654dabd10",
+          "url": "https://github.com/JosueRamses/Arquitectura-C4/blob/main/ms-contribuyentes/src/main/java/ec/consulta/Input.java",
+          "customName": "Implementación de la comunicación"
+        }
+      ]
     },
     {
       "id": "conn-tax-errors-tc",
       "originId": "tax-errors",
       "targetId": "tc",
-      "name": "Advice MVC: transforma excepciones en respuestas HTTP",
+      "name": "Gestiona excepciones del endpoint",
       "direction": "outgoing",
+      "description": "Spring aplica los @ExceptionHandler globales al endpoint: errores de validación o JSON generan 400, ApiException conserva su estado HTTP y otros fallos generan 503. No es una llamada directa de Errors al controlador. Protocolo: Spring MVC / @RestControllerAdvice.",
       "labels": {
-        "vista": "C3"
-      }
+        "vista": "C3",
+        "protocolo": "Spring MVC / @RestControllerAdvice",
+        "responsabilidad": "Spring aplica los @ExceptionHandler globales al endpoint: errores de validación o JSON generan 400, ApiException conserva su estado HTTP y otros fallos generan 503. No es una llamada directa de Errors al controlador.",
+        "tipo": "soporte transversal del framework"
+      },
+      "links": [
+        {
+          "id": "bd54f2e7e5a371ed3b92",
+          "url": "https://github.com/JosueRamses/Arquitectura-C4/blob/main/ms-contribuyentes/src/main/java/ec/consulta/Errors.java",
+          "customName": "Implementación de la comunicación"
+        },
+        {
+          "id": "661583d261d0e640a288",
+          "url": "https://github.com/JosueRamses/Arquitectura-C4/blob/main/ms-contribuyentes/src/main/java/ec/consulta/ContribuyenteController.java",
+          "customName": "Implementación de la comunicación"
+        }
+      ]
     },
     {
       "id": "conn-ts-ta",
       "originId": "ts",
       "targetId": "ta",
-      "name": "Consulta existencia y datos oficiales",
+      "name": "Solicita datos oficiales del SRI",
       "direction": "outgoing",
+      "description": "ContribuyenteService llama a SriClient.get para existePorNumeroRuc y, si existe, obtenerPorNumerosRuc. Protocolo: Java en proceso.",
       "labels": {
-        "vista": "C3"
-      }
+        "vista": "C3",
+        "protocolo": "Java en proceso",
+        "responsabilidad": "ContribuyenteService llama a SriClient.get para existePorNumeroRuc y, si existe, obtenerPorNumerosRuc.",
+        "tipo": "invocacion"
+      },
+      "links": [
+        {
+          "id": "0d054c350c2ca1de0810",
+          "url": "https://github.com/JosueRamses/Arquitectura-C4/blob/main/ms-contribuyentes/src/main/java/ec/consulta/ContribuyenteService.java",
+          "customName": "Implementación de la comunicación"
+        },
+        {
+          "id": "849bb63e123632f42fec",
+          "url": "https://github.com/JosueRamses/Arquitectura-C4/blob/main/ms-contribuyentes/src/main/java/ec/consulta/SriClient.java",
+          "customName": "Implementación de la comunicación"
+        }
+      ]
     },
     {
       "id": "conn-ta-sri",
       "originId": "ta",
       "targetId": "sri",
-      "name": "HTTPS JSON · SRI oficial",
+      "name": "GET REST oficial del SRI",
       "direction": "outgoing",
+      "description": "Consume ConsolidadoContribuyente/existePorNumeroRuc?numeroRuc y obtenerPorNumerosRuc?ruc. Timeout de conexión 5 s y solicitud 10 s; comprueba estado HTTP y JSON. Protocolo: HTTPS / GET / JSON; Java HttpClient + Jackson.",
       "labels": {
-        "vista": "C3"
-      }
+        "vista": "C3",
+        "protocolo": "HTTPS / GET / JSON; Java HttpClient + Jackson",
+        "responsabilidad": "Consume ConsolidadoContribuyente/existePorNumeroRuc?numeroRuc y obtenerPorNumerosRuc?ruc. Timeout de conexión 5 s y solicitud 10 s; comprueba estado HTTP y JSON.",
+        "tipo": "invocacion"
+      },
+      "links": [
+        {
+          "id": "849bb63e123632f42fec",
+          "url": "https://github.com/JosueRamses/Arquitectura-C4/blob/main/ms-contribuyentes/src/main/java/ec/consulta/SriClient.java",
+          "customName": "Implementación de la comunicación"
+        },
+        {
+          "id": "0d054c350c2ca1de0810",
+          "url": "https://github.com/JosueRamses/Arquitectura-C4/blob/main/ms-contribuyentes/src/main/java/ec/consulta/ContribuyenteService.java",
+          "customName": "Implementación de la comunicación"
+        }
+      ]
     },
     {
       "id": "conn-gateway-car",
       "originId": "gateway",
       "targetId": "car",
-      "name": "POST JSON · ruta /api correspondiente",
+      "name": "Enruta POST /api/vehiculos/consultar",
       "direction": "outgoing",
+      "description": "Conserva la ruta y reenvía la consulta al microservicio correspondiente; propaga la respuesta JSON. Relación agregada de la vista C2; no representa una llamada adicional a las detalladas en niveles inferiores. Protocolo: HTTP / JSON · puerto 8082.",
       "labels": {
-        "vista": "C2"
-      }
+        "vista": "C2",
+        "protocolo": "HTTP / JSON · puerto 8082",
+        "responsabilidad": "Conserva la ruta y reenvía la consulta al microservicio correspondiente; propaga la respuesta JSON.",
+        "tipo": "agregacion C4"
+      },
+      "links": [
+        {
+          "id": "85fe97aeae33090b9584",
+          "url": "https://github.com/JosueRamses/Arquitectura-C4/blob/main/api-gateway/src/main/resources/application.yml",
+          "customName": "Implementación de la comunicación"
+        },
+        {
+          "id": "f188c8c0ce5989e68a4d",
+          "url": "https://github.com/JosueRamses/Arquitectura-C4/blob/main/ms-vehiculos/src/main/java/ec/consulta/VehiculoController.java",
+          "customName": "Implementación de la comunicación"
+        }
+      ]
     },
     {
       "id": "conn-gateway-vc",
       "originId": "gateway",
       "targetId": "vc",
-      "name": "HTTP JSON · entrada al controlador",
+      "name": "POST /api/vehiculos/consultar",
       "direction": "outgoing",
+      "description": "La ruta del Gateway entrega la solicitud al controlador REST anotado con @PostMapping; el microservicio valida su DTO. Protocolo: HTTP / JSON · puerto 8082.",
       "labels": {
-        "vista": "C3"
-      }
+        "vista": "C3",
+        "protocolo": "HTTP / JSON · puerto 8082",
+        "responsabilidad": "La ruta del Gateway entrega la solicitud al controlador REST anotado con @PostMapping; el microservicio valida su DTO.",
+        "tipo": "invocacion"
+      },
+      "links": [
+        {
+          "id": "85fe97aeae33090b9584",
+          "url": "https://github.com/JosueRamses/Arquitectura-C4/blob/main/api-gateway/src/main/resources/application.yml",
+          "customName": "Implementación de la comunicación"
+        },
+        {
+          "id": "f188c8c0ce5989e68a4d",
+          "url": "https://github.com/JosueRamses/Arquitectura-C4/blob/main/ms-vehiculos/src/main/java/ec/consulta/VehiculoController.java",
+          "customName": "Implementación de la comunicación"
+        }
+      ]
     },
     {
       "id": "conn-vc-vs",
       "originId": "vc",
       "targetId": "vs",
-      "name": "DTO de solicitud validado",
+      "name": "Invoca consultar con entrada validada",
       "direction": "outgoing",
+      "description": "El controlador llama a service.consultar con la placa sin guion. Protocolo: Java en proceso / DTO.",
       "labels": {
-        "vista": "C3"
-      }
+        "vista": "C3",
+        "protocolo": "Java en proceso / DTO",
+        "responsabilidad": "El controlador llama a service.consultar con la placa sin guion.",
+        "tipo": "invocacion"
+      },
+      "links": [
+        {
+          "id": "f188c8c0ce5989e68a4d",
+          "url": "https://github.com/JosueRamses/Arquitectura-C4/blob/main/ms-vehiculos/src/main/java/ec/consulta/VehiculoController.java",
+          "customName": "Implementación de la comunicación"
+        },
+        {
+          "id": "ddd997993879e1374d94",
+          "url": "https://github.com/JosueRamses/Arquitectura-C4/blob/main/ms-vehiculos/src/main/java/ec/consulta/VehiculoService.java",
+          "customName": "Implementación de la comunicación"
+        }
+      ]
     },
     {
       "id": "conn-car-errors-vc",
       "originId": "car-errors",
       "targetId": "vc",
-      "name": "Advice MVC: transforma excepciones en respuestas HTTP",
+      "name": "Gestiona excepciones del endpoint",
       "direction": "outgoing",
+      "description": "Spring aplica los @ExceptionHandler globales al endpoint: errores de validación o JSON generan 400, ApiException conserva su estado HTTP y otros fallos generan 503. No es una llamada directa de Errors al controlador. Protocolo: Spring MVC / @RestControllerAdvice.",
       "labels": {
-        "vista": "C3"
-      }
+        "vista": "C3",
+        "protocolo": "Spring MVC / @RestControllerAdvice",
+        "responsabilidad": "Spring aplica los @ExceptionHandler globales al endpoint: errores de validación o JSON generan 400, ApiException conserva su estado HTTP y otros fallos generan 503. No es una llamada directa de Errors al controlador.",
+        "tipo": "soporte transversal del framework"
+      },
+      "links": [
+        {
+          "id": "13b8a6ba98608c0c73d4",
+          "url": "https://github.com/JosueRamses/Arquitectura-C4/blob/main/ms-vehiculos/src/main/java/ec/consulta/Errors.java",
+          "customName": "Implementación de la comunicación"
+        },
+        {
+          "id": "f188c8c0ce5989e68a4d",
+          "url": "https://github.com/JosueRamses/Arquitectura-C4/blob/main/ms-vehiculos/src/main/java/ec/consulta/VehiculoController.java",
+          "customName": "Implementación de la comunicación"
+        }
+      ]
     },
     {
       "id": "conn-vs-va",
       "originId": "vs",
       "targetId": "va",
-      "name": "Consulta existencia y datos oficiales",
+      "name": "Solicita datos oficiales del SRI",
       "direction": "outgoing",
+      "description": "VehiculoService llama a SriClient.get para existencia, datos del vehículo y rubros usando el codigoVehiculo devuelto. Protocolo: Java en proceso.",
       "labels": {
-        "vista": "C3"
-      }
+        "vista": "C3",
+        "protocolo": "Java en proceso",
+        "responsabilidad": "VehiculoService llama a SriClient.get para existencia, datos del vehículo y rubros usando el codigoVehiculo devuelto.",
+        "tipo": "invocacion"
+      },
+      "links": [
+        {
+          "id": "ddd997993879e1374d94",
+          "url": "https://github.com/JosueRamses/Arquitectura-C4/blob/main/ms-vehiculos/src/main/java/ec/consulta/VehiculoService.java",
+          "customName": "Implementación de la comunicación"
+        },
+        {
+          "id": "40bc298e16e15b5e2141",
+          "url": "https://github.com/JosueRamses/Arquitectura-C4/blob/main/ms-vehiculos/src/main/java/ec/consulta/SriClient.java",
+          "customName": "Implementación de la comunicación"
+        }
+      ]
     },
     {
       "id": "conn-va-sri",
       "originId": "va",
       "targetId": "sri",
-      "name": "HTTPS JSON · SRI oficial",
+      "name": "GET REST oficial del SRI",
       "direction": "outgoing",
+      "description": "Consume BaseVehiculo/existePorNumeroPlaca?numeroPlaca, obtenerPorNumeroPlacaOPorNumeroCampvOPorNumeroCpn?numeroPlacaCampvCpn y ConsultaRubros/obtenerPorCodigoVehiculo?codigoVehiculo. HTTP 204 se informa como consulta sin contenido, sin inventar resultados. Protocolo: HTTPS / GET / JSON; Java HttpClient + Jackson.",
       "labels": {
-        "vista": "C3"
-      }
+        "vista": "C3",
+        "protocolo": "HTTPS / GET / JSON; Java HttpClient + Jackson",
+        "responsabilidad": "Consume BaseVehiculo/existePorNumeroPlaca?numeroPlaca, obtenerPorNumeroPlacaOPorNumeroCampvOPorNumeroCpn?numeroPlacaCampvCpn y ConsultaRubros/obtenerPorCodigoVehiculo?codigoVehiculo. HTTP 204 se informa como consulta sin contenido, sin inventar resultados.",
+        "tipo": "invocacion"
+      },
+      "links": [
+        {
+          "id": "40bc298e16e15b5e2141",
+          "url": "https://github.com/JosueRamses/Arquitectura-C4/blob/main/ms-vehiculos/src/main/java/ec/consulta/SriClient.java",
+          "customName": "Implementación de la comunicación"
+        },
+        {
+          "id": "ddd997993879e1374d94",
+          "url": "https://github.com/JosueRamses/Arquitectura-C4/blob/main/ms-vehiculos/src/main/java/ec/consulta/VehiculoService.java",
+          "customName": "Implementación de la comunicación"
+        }
+      ]
     },
     {
       "id": "conn-gateway-lic",
       "originId": "gateway",
       "targetId": "lic",
-      "name": "POST JSON · ruta /api correspondiente",
+      "name": "Enruta POST /api/licencias/consultar",
       "direction": "outgoing",
+      "description": "Conserva la ruta y reenvía la consulta al microservicio correspondiente; propaga la respuesta JSON. Relación agregada de la vista C2; no representa una llamada adicional a las detalladas en niveles inferiores. Protocolo: HTTP / JSON · puerto 8083.",
       "labels": {
-        "vista": "C2"
-      }
+        "vista": "C2",
+        "protocolo": "HTTP / JSON · puerto 8083",
+        "responsabilidad": "Conserva la ruta y reenvía la consulta al microservicio correspondiente; propaga la respuesta JSON.",
+        "tipo": "agregacion C4"
+      },
+      "links": [
+        {
+          "id": "85fe97aeae33090b9584",
+          "url": "https://github.com/JosueRamses/Arquitectura-C4/blob/main/api-gateway/src/main/resources/application.yml",
+          "customName": "Implementación de la comunicación"
+        },
+        {
+          "id": "4d0a46e5e51f39ea7e2a",
+          "url": "https://github.com/JosueRamses/Arquitectura-C4/blob/main/ms-licencias/src/main/java/ec/consulta/LicenciaController.java",
+          "customName": "Implementación de la comunicación"
+        }
+      ]
     },
     {
       "id": "conn-gateway-lc",
       "originId": "gateway",
       "targetId": "lc",
-      "name": "HTTP JSON · entrada al controlador",
+      "name": "POST /api/licencias/consultar",
       "direction": "outgoing",
+      "description": "La ruta del Gateway entrega la solicitud al controlador REST anotado con @PostMapping; el microservicio valida su DTO. Protocolo: HTTP / JSON · puerto 8083.",
       "labels": {
-        "vista": "C3"
-      }
+        "vista": "C3",
+        "protocolo": "HTTP / JSON · puerto 8083",
+        "responsabilidad": "La ruta del Gateway entrega la solicitud al controlador REST anotado con @PostMapping; el microservicio valida su DTO.",
+        "tipo": "invocacion"
+      },
+      "links": [
+        {
+          "id": "85fe97aeae33090b9584",
+          "url": "https://github.com/JosueRamses/Arquitectura-C4/blob/main/api-gateway/src/main/resources/application.yml",
+          "customName": "Implementación de la comunicación"
+        },
+        {
+          "id": "4d0a46e5e51f39ea7e2a",
+          "url": "https://github.com/JosueRamses/Arquitectura-C4/blob/main/ms-licencias/src/main/java/ec/consulta/LicenciaController.java",
+          "customName": "Implementación de la comunicación"
+        }
+      ]
     },
     {
       "id": "conn-lc-ls",
       "originId": "lc",
       "targetId": "ls",
-      "name": "DTO de solicitud validado",
+      "name": "Invoca consultar con entrada validada",
       "direction": "outgoing",
+      "description": "El controlador llama a service.consultar con la cédula derivada del RUC validado. Protocolo: Java en proceso / DTO.",
       "labels": {
-        "vista": "C3"
-      }
+        "vista": "C3",
+        "protocolo": "Java en proceso / DTO",
+        "responsabilidad": "El controlador llama a service.consultar con la cédula derivada del RUC validado.",
+        "tipo": "invocacion"
+      },
+      "links": [
+        {
+          "id": "4d0a46e5e51f39ea7e2a",
+          "url": "https://github.com/JosueRamses/Arquitectura-C4/blob/main/ms-licencias/src/main/java/ec/consulta/LicenciaController.java",
+          "customName": "Implementación de la comunicación"
+        },
+        {
+          "id": "aa040a0bda96180f853c",
+          "url": "https://github.com/JosueRamses/Arquitectura-C4/blob/main/ms-licencias/src/main/java/ec/consulta/LicenciaService.java",
+          "customName": "Implementación de la comunicación"
+        }
+      ]
     },
     {
       "id": "conn-lc-lic-input",
       "originId": "lc",
       "targetId": "lic-input",
-      "name": "Valida RUC y deriva cédula natural",
+      "name": "Valida el RUC natural",
       "direction": "outgoing",
+      "description": "Invoca Input.requireRuc: comprueba longitud, provincia, tercer dígito, sufijo 001 y dígito verificador de cédula. La derivación de cédula ocurre fuera de Input. Protocolo: Java en proceso / llamada estática.",
       "labels": {
-        "vista": "C3"
-      }
+        "vista": "C3",
+        "protocolo": "Java en proceso / llamada estática",
+        "responsabilidad": "Invoca Input.requireRuc: comprueba longitud, provincia, tercer dígito, sufijo 001 y dígito verificador de cédula. La derivación de cédula ocurre fuera de Input.",
+        "tipo": "invocacion"
+      },
+      "links": [
+        {
+          "id": "4d0a46e5e51f39ea7e2a",
+          "url": "https://github.com/JosueRamses/Arquitectura-C4/blob/main/ms-licencias/src/main/java/ec/consulta/LicenciaController.java",
+          "customName": "Implementación de la comunicación"
+        },
+        {
+          "id": "1464859724e674c10d6c",
+          "url": "https://github.com/JosueRamses/Arquitectura-C4/blob/main/ms-licencias/src/main/java/ec/consulta/Input.java",
+          "customName": "Implementación de la comunicación"
+        }
+      ]
     },
     {
       "id": "conn-lic-errors-lc",
       "originId": "lic-errors",
       "targetId": "lc",
-      "name": "Advice MVC: transforma excepciones en respuestas HTTP",
+      "name": "Gestiona excepciones del endpoint",
       "direction": "outgoing",
+      "description": "Spring aplica los @ExceptionHandler globales al endpoint: errores de validación o JSON generan 400, ApiException conserva su estado HTTP y otros fallos generan 503. No es una llamada directa de Errors al controlador. Protocolo: Spring MVC / @RestControllerAdvice.",
       "labels": {
-        "vista": "C3"
-      }
+        "vista": "C3",
+        "protocolo": "Spring MVC / @RestControllerAdvice",
+        "responsabilidad": "Spring aplica los @ExceptionHandler globales al endpoint: errores de validación o JSON generan 400, ApiException conserva su estado HTTP y otros fallos generan 503. No es una llamada directa de Errors al controlador.",
+        "tipo": "soporte transversal del framework"
+      },
+      "links": [
+        {
+          "id": "5d3370bcbfdf16caf162",
+          "url": "https://github.com/JosueRamses/Arquitectura-C4/blob/main/ms-licencias/src/main/java/ec/consulta/Errors.java",
+          "customName": "Implementación de la comunicación"
+        },
+        {
+          "id": "4d0a46e5e51f39ea7e2a",
+          "url": "https://github.com/JosueRamses/Arquitectura-C4/blob/main/ms-licencias/src/main/java/ec/consulta/LicenciaController.java",
+          "customName": "Implementación de la comunicación"
+        }
+      ]
     },
     {
       "id": "conn-ls-la",
       "originId": "ls",
       "targetId": "la",
-      "name": "Circuit Breaker Resilience4j · consulta si caché no fresca",
+      "name": "Consulta ANT protegida por Circuit Breaker",
       "direction": "outgoing",
+      "description": "LicenciaService ejecuta ant.consultar mediante circuit.executeSupplier únicamente si no existe caché fresca. Los fallos alimentan el circuito y activan el fallback. Protocolo: Java en proceso.",
       "labels": {
-        "vista": "C3"
-      }
+        "vista": "C3",
+        "protocolo": "Java en proceso",
+        "responsabilidad": "LicenciaService ejecuta ant.consultar mediante circuit.executeSupplier únicamente si no existe caché fresca. Los fallos alimentan el circuito y activan el fallback.",
+        "tipo": "invocacion"
+      },
+      "links": [
+        {
+          "id": "aa040a0bda96180f853c",
+          "url": "https://github.com/JosueRamses/Arquitectura-C4/blob/main/ms-licencias/src/main/java/ec/consulta/LicenciaService.java",
+          "customName": "Implementación de la comunicación"
+        },
+        {
+          "id": "7255d137db3b0ba15eed",
+          "url": "https://github.com/JosueRamses/Arquitectura-C4/blob/main/ms-licencias/src/main/java/ec/consulta/AntClient.java",
+          "customName": "Implementación de la comunicación"
+        }
+      ]
     },
     {
       "id": "conn-la-ant",
       "originId": "la",
       "targetId": "ant",
-      "name": "HTTPS HTML · Jsoup · sin selector aún verificado",
+      "name": "GET oficial de puntos por cédula",
       "direction": "outgoing",
+      "description": "Consulta clp_grid_citaciones.jsp con ps_tipo_identificacion=CED, ps_identificacion y ps_placa vacío. Timeout de conexión y solicitud 5 s. Rechaza 401/403, 502, CAPTCHA y resultados inválidos; requiere selector verificado para extraer puntos. Protocolo: HTTPS / GET / HTML; Java HttpClient + Jsoup.",
       "labels": {
-        "vista": "C3"
-      }
+        "vista": "C3",
+        "protocolo": "HTTPS / GET / HTML; Java HttpClient + Jsoup",
+        "responsabilidad": "Consulta clp_grid_citaciones.jsp con ps_tipo_identificacion=CED, ps_identificacion y ps_placa vacío. Timeout de conexión y solicitud 5 s. Rechaza 401/403, 502, CAPTCHA y resultados inválidos; requiere selector verificado para extraer puntos.",
+        "tipo": "invocacion"
+      },
+      "links": [
+        {
+          "id": "7255d137db3b0ba15eed",
+          "url": "https://github.com/JosueRamses/Arquitectura-C4/blob/main/ms-licencias/src/main/java/ec/consulta/AntClient.java",
+          "customName": "Implementación de la comunicación"
+        },
+        {
+          "id": "aa040a0bda96180f853c",
+          "url": "https://github.com/JosueRamses/Arquitectura-C4/blob/main/ms-licencias/src/main/java/ec/consulta/LicenciaService.java",
+          "customName": "Implementación de la comunicación"
+        }
+      ]
     },
     {
       "id": "conn-user-sys",
       "originId": "user",
       "targetId": "sys",
-      "name": "Consulta información autorizada mediante interfaz web",
+      "name": "Consulta contribuyente, vehículo y licencia",
       "direction": "outgoing",
+      "description": "El ciudadano introduce correo, RUC natural y placa en Angular y consulta datos oficiales; la interfaz no acredita propiedad del vehículo. Relación agregada de la vista C1; no representa una llamada adicional a las detalladas en niveles inferiores. Protocolo: Interfaz web / HTTP local.",
       "labels": {
-        "vista": "C1"
-      }
+        "vista": "C1",
+        "protocolo": "Interfaz web / HTTP local",
+        "responsabilidad": "El ciudadano introduce correo, RUC natural y placa en Angular y consulta datos oficiales; la interfaz no acredita propiedad del vehículo.",
+        "tipo": "agregacion C4"
+      },
+      "links": [
+        {
+          "id": "882c607a97f85739957d",
+          "url": "https://github.com/JosueRamses/Arquitectura-C4/blob/main/frontend-angular/src/main.ts",
+          "customName": "Implementación de la comunicación"
+        }
+      ]
     },
     {
       "id": "conn-sys-sri",
       "originId": "sys",
       "targetId": "sri",
-      "name": "Consulta contribuyente, vehículo y rubros por HTTPS",
+      "name": "Consulta información tributaria y vehicular",
       "direction": "outgoing",
+      "description": "Las integraciones de contribuyentes y vehículos consultan exclusivamente los endpoints oficiales SRI. Relación agregada de la vista C1; no representa una llamada adicional a las detalladas en niveles inferiores. Protocolo: HTTPS / GET / REST JSON.",
       "labels": {
-        "vista": "C1"
-      }
+        "vista": "C1",
+        "protocolo": "HTTPS / GET / REST JSON",
+        "responsabilidad": "Las integraciones de contribuyentes y vehículos consultan exclusivamente los endpoints oficiales SRI.",
+        "tipo": "agregacion C4"
+      },
+      "links": [
+        {
+          "id": "849bb63e123632f42fec",
+          "url": "https://github.com/JosueRamses/Arquitectura-C4/blob/main/ms-contribuyentes/src/main/java/ec/consulta/SriClient.java",
+          "customName": "Implementación de la comunicación"
+        },
+        {
+          "id": "40bc298e16e15b5e2141",
+          "url": "https://github.com/JosueRamses/Arquitectura-C4/blob/main/ms-vehiculos/src/main/java/ec/consulta/SriClient.java",
+          "customName": "Implementación de la comunicación"
+        }
+      ]
     },
     {
       "id": "conn-sys-ant",
       "originId": "sys",
       "targetId": "ant",
-      "name": "Consulta puntos por HTTPS; indisponibilidad controlada",
+      "name": "Consulta puntos con tolerancia a fallos",
       "direction": "outgoing",
+      "description": "El microservicio de licencias consulta la página ANT; controla indisponibilidad con caché, circuito y fallback. Relación agregada de la vista C1; no representa una llamada adicional a las detalladas en niveles inferiores. Protocolo: HTTPS / GET / HTML.",
       "labels": {
-        "vista": "C1"
-      }
+        "vista": "C1",
+        "protocolo": "HTTPS / GET / HTML",
+        "responsabilidad": "El microservicio de licencias consulta la página ANT; controla indisponibilidad con caché, circuito y fallback.",
+        "tipo": "agregacion C4"
+      },
+      "links": [
+        {
+          "id": "7255d137db3b0ba15eed",
+          "url": "https://github.com/JosueRamses/Arquitectura-C4/blob/main/ms-licencias/src/main/java/ec/consulta/AntClient.java",
+          "customName": "Implementación de la comunicación"
+        },
+        {
+          "id": "aa040a0bda96180f853c",
+          "url": "https://github.com/JosueRamses/Arquitectura-C4/blob/main/ms-licencias/src/main/java/ec/consulta/LicenciaService.java",
+          "customName": "Implementación de la comunicación"
+        }
+      ]
     },
     {
       "id": "conn-user-web",
       "originId": "user",
       "targetId": "web",
-      "name": "Navegador HTTP local :4200",
+      "name": "Introduce datos y visualiza resultados",
       "direction": "outgoing",
+      "description": "Formularios progresivos de correo y RUC, placa y puntos; validación, carga, errores, origen y antigüedad del dato. Relación agregada de la vista C2; no representa una llamada adicional a las detalladas en niveles inferiores. Protocolo: HTTP local :4200 / navegador HTML.",
       "labels": {
-        "vista": "C2"
-      }
+        "vista": "C2",
+        "protocolo": "HTTP local :4200 / navegador HTML",
+        "responsabilidad": "Formularios progresivos de correo y RUC, placa y puntos; validación, carga, errores, origen y antigüedad del dato.",
+        "tipo": "agregacion C4"
+      },
+      "links": [
+        {
+          "id": "882c607a97f85739957d",
+          "url": "https://github.com/JosueRamses/Arquitectura-C4/blob/main/frontend-angular/src/main.ts",
+          "customName": "Implementación de la comunicación"
+        }
+      ]
     },
     {
       "id": "conn-web-gateway",
       "originId": "web",
       "targetId": "gateway",
-      "name": "HTTP JSON /api · proxy Angular o nginx",
+      "name": "POST /api de contribuyentes, vehículos y licencias",
       "direction": "outgoing",
+      "description": "HttpClient de Angular consume /api; el proxy de desarrollo o nginx reenvían al Gateway. Angular nunca llama directamente al SRI ni a la ANT. Relación agregada de la vista C2; no representa una llamada adicional a las detalladas en niveles inferiores. Protocolo: HTTP / JSON · Gateway :8080.",
       "labels": {
-        "vista": "C2"
-      }
+        "vista": "C2",
+        "protocolo": "HTTP / JSON · Gateway :8080",
+        "responsabilidad": "HttpClient de Angular consume /api; el proxy de desarrollo o nginx reenvían al Gateway. Angular nunca llama directamente al SRI ni a la ANT.",
+        "tipo": "agregacion C4"
+      },
+      "links": [
+        {
+          "id": "882c607a97f85739957d",
+          "url": "https://github.com/JosueRamses/Arquitectura-C4/blob/main/frontend-angular/src/main.ts",
+          "customName": "Implementación de la comunicación"
+        },
+        {
+          "id": "e745aa756c5a393ef398",
+          "url": "https://github.com/JosueRamses/Arquitectura-C4/blob/main/frontend-angular/proxy.conf.json",
+          "customName": "Implementación de la comunicación"
+        },
+        {
+          "id": "22a1bab358626c797705",
+          "url": "https://github.com/JosueRamses/Arquitectura-C4/blob/main/frontend-angular/nginx.conf",
+          "customName": "Implementación de la comunicación"
+        },
+        {
+          "id": "85fe97aeae33090b9584",
+          "url": "https://github.com/JosueRamses/Arquitectura-C4/blob/main/api-gateway/src/main/resources/application.yml",
+          "customName": "Implementación de la comunicación"
+        }
+      ]
     },
     {
       "id": "conn-tax-sri",
       "originId": "tax",
       "targetId": "sri",
-      "name": "HTTPS REST · RUC",
+      "name": "Verifica RUC natural y obtiene contribuyente",
       "direction": "outgoing",
+      "description": "Comprueba existencia, mismo RUC y tipo persona natural; muestra razón social y estado oficial. Relación agregada de la vista C2; no representa una llamada adicional a las detalladas en niveles inferiores. Protocolo: HTTPS / GET / REST JSON.",
       "labels": {
-        "vista": "C2"
-      }
+        "vista": "C2",
+        "protocolo": "HTTPS / GET / REST JSON",
+        "responsabilidad": "Comprueba existencia, mismo RUC y tipo persona natural; muestra razón social y estado oficial.",
+        "tipo": "agregacion C4"
+      },
+      "links": [
+        {
+          "id": "0d054c350c2ca1de0810",
+          "url": "https://github.com/JosueRamses/Arquitectura-C4/blob/main/ms-contribuyentes/src/main/java/ec/consulta/ContribuyenteService.java",
+          "customName": "Implementación de la comunicación"
+        },
+        {
+          "id": "849bb63e123632f42fec",
+          "url": "https://github.com/JosueRamses/Arquitectura-C4/blob/main/ms-contribuyentes/src/main/java/ec/consulta/SriClient.java",
+          "customName": "Implementación de la comunicación"
+        }
+      ]
     },
     {
       "id": "conn-car-sri",
       "originId": "car",
       "targetId": "sri",
-      "name": "HTTPS REST · placa, código real y rubros",
+      "name": "Verifica placa y consulta vehículo y rubros",
       "direction": "outgoing",
+      "description": "Usa la placa solicitada, extrae codigoVehiculo de la respuesta y consulta valores de matrícula con ese código. Relación agregada de la vista C2; no representa una llamada adicional a las detalladas en niveles inferiores. Protocolo: HTTPS / GET / REST JSON.",
       "labels": {
-        "vista": "C2"
-      }
+        "vista": "C2",
+        "protocolo": "HTTPS / GET / REST JSON",
+        "responsabilidad": "Usa la placa solicitada, extrae codigoVehiculo de la respuesta y consulta valores de matrícula con ese código.",
+        "tipo": "agregacion C4"
+      },
+      "links": [
+        {
+          "id": "ddd997993879e1374d94",
+          "url": "https://github.com/JosueRamses/Arquitectura-C4/blob/main/ms-vehiculos/src/main/java/ec/consulta/VehiculoService.java",
+          "customName": "Implementación de la comunicación"
+        },
+        {
+          "id": "40bc298e16e15b5e2141",
+          "url": "https://github.com/JosueRamses/Arquitectura-C4/blob/main/ms-vehiculos/src/main/java/ec/consulta/SriClient.java",
+          "customName": "Implementación de la comunicación"
+        }
+      ]
     },
     {
       "id": "conn-lic-ant",
       "originId": "lic",
       "targetId": "ant",
-      "name": "HTTPS HTML · timeout 5 s; acceso no confirmado",
+      "name": "Consulta puntos por cédula",
       "direction": "outgoing",
+      "description": "Llama a la URL del docente; solo acepta HTML válido con puntos verificables. Restricciones o fallos activan la estrategia de respaldo. Relación agregada de la vista C2; no representa una llamada adicional a las detalladas en niveles inferiores. Protocolo: HTTPS / GET / HTML · timeout 5 s.",
       "labels": {
-        "vista": "C2"
-      }
+        "vista": "C2",
+        "protocolo": "HTTPS / GET / HTML · timeout 5 s",
+        "responsabilidad": "Llama a la URL del docente; solo acepta HTML válido con puntos verificables. Restricciones o fallos activan la estrategia de respaldo.",
+        "tipo": "agregacion C4"
+      },
+      "links": [
+        {
+          "id": "7255d137db3b0ba15eed",
+          "url": "https://github.com/JosueRamses/Arquitectura-C4/blob/main/ms-licencias/src/main/java/ec/consulta/AntClient.java",
+          "customName": "Implementación de la comunicación"
+        },
+        {
+          "id": "aa040a0bda96180f853c",
+          "url": "https://github.com/JosueRamses/Arquitectura-C4/blob/main/ms-licencias/src/main/java/ec/consulta/LicenciaService.java",
+          "customName": "Implementación de la comunicación"
+        }
+      ]
     },
     {
       "id": "conn-lic-redis",
       "originId": "lic",
       "targetId": "redis",
-      "name": "RESP TCP sin TLS: solo pruebas sintéticas",
+      "name": "Mantiene caché y último respaldo válido",
       "direction": "outgoing",
+      "description": "Aplica Cache-Aside, HMAC, frescura 15 min y retención 24 h. Sin TLS solo se permiten identificadores sintéticos; el almacenamiento de información personal queda bloqueado. Relación agregada de la vista C2; no representa una llamada adicional a las detalladas en niveles inferiores. Protocolo: RESP sobre TCP :16824 · sin TLS actual.",
       "labels": {
-        "vista": "C2"
-      }
+        "vista": "C2",
+        "protocolo": "RESP sobre TCP :16824 · sin TLS actual",
+        "responsabilidad": "Aplica Cache-Aside, HMAC, frescura 15 min y retención 24 h. Sin TLS solo se permiten identificadores sintéticos; el almacenamiento de información personal queda bloqueado.",
+        "tipo": "agregacion C4"
+      },
+      "links": [
+        {
+          "id": "aa040a0bda96180f853c",
+          "url": "https://github.com/JosueRamses/Arquitectura-C4/blob/main/ms-licencias/src/main/java/ec/consulta/LicenciaService.java",
+          "customName": "Implementación de la comunicación"
+        },
+        {
+          "id": "1d2ae0f9a886c4a0fb52",
+          "url": "https://github.com/JosueRamses/Arquitectura-C4/blob/main/ms-licencias/src/main/java/ec/consulta/RedisCacheRepository.java",
+          "customName": "Implementación de la comunicación"
+        }
+      ]
     },
     {
       "id": "conn-ls-lr",
       "originId": "ls",
       "targetId": "lr",
-      "name": "Cache-Aside 15 min · Fallback hasta 24 h",
+      "name": "Cache-Aside y Fallback sobre CacheRepository",
       "direction": "outgoing",
+      "description": "Invoca cache.get antes de consultar ANT. Si la respuesta es fresca, la devuelve; si no, intenta actualizar. Tras una respuesta válida llama cache.save. Si ANT falla, usa el respaldo leído previamente hasta 24 h, sin prolongar su TTL; sin respaldo retorna puntos null. Protocolo: Java en proceso / interfaz CacheRepository.",
       "labels": {
-        "vista": "C3"
-      }
+        "vista": "C3",
+        "protocolo": "Java en proceso / interfaz CacheRepository",
+        "responsabilidad": "Invoca cache.get antes de consultar ANT. Si la respuesta es fresca, la devuelve; si no, intenta actualizar. Tras una respuesta válida llama cache.save. Si ANT falla, usa el respaldo leído previamente hasta 24 h, sin prolongar su TTL; sin respaldo retorna puntos null.",
+        "tipo": "invocacion"
+      },
+      "links": [
+        {
+          "id": "aa040a0bda96180f853c",
+          "url": "https://github.com/JosueRamses/Arquitectura-C4/blob/main/ms-licencias/src/main/java/ec/consulta/LicenciaService.java",
+          "customName": "Implementación de la comunicación"
+        },
+        {
+          "id": "d691c4c1ffe7f174d79e",
+          "url": "https://github.com/JosueRamses/Arquitectura-C4/blob/main/ms-licencias/src/main/java/ec/consulta/CacheRepository.java",
+          "customName": "Implementación de la comunicación"
+        },
+        {
+          "id": "1d2ae0f9a886c4a0fb52",
+          "url": "https://github.com/JosueRamses/Arquitectura-C4/blob/main/ms-licencias/src/main/java/ec/consulta/RedisCacheRepository.java",
+          "customName": "Implementación de la comunicación"
+        }
+      ]
     },
     {
       "id": "conn-lr-redis",
       "originId": "lr",
       "targetId": "redis",
-      "name": "HMAC · TTL restante 24 h · bloqueo de datos personales sin TLS",
+      "name": "GET / SET con HMAC y expiración",
       "direction": "outgoing",
+      "description": "StringRedisTemplate ejecuta GET y SET con TTL restante hasta 24 h desde actualizadoEn. Las claves usan HMAC-SHA256 y namespaces separados. REDIS_SSL admite TLS, pero actualmente es false y se rechazan identificadores personales antes de cualquier operación. Protocolo: RESP sobre TCP :16824 · Spring Data Redis / Lettuce.",
       "labels": {
-        "vista": "C3"
-      }
+        "vista": "C3",
+        "protocolo": "RESP sobre TCP :16824 · Spring Data Redis / Lettuce",
+        "responsabilidad": "StringRedisTemplate ejecuta GET y SET con TTL restante hasta 24 h desde actualizadoEn. Las claves usan HMAC-SHA256 y namespaces separados. REDIS_SSL admite TLS, pero actualmente es false y se rechazan identificadores personales antes de cualquier operación.",
+        "tipo": "invocacion"
+      },
+      "links": [
+        {
+          "id": "1d2ae0f9a886c4a0fb52",
+          "url": "https://github.com/JosueRamses/Arquitectura-C4/blob/main/ms-licencias/src/main/java/ec/consulta/RedisCacheRepository.java",
+          "customName": "Implementación de la comunicación"
+        },
+        {
+          "id": "a634fbef7c0b461bca83",
+          "url": "https://github.com/JosueRamses/Arquitectura-C4/blob/main/ms-licencias/src/main/resources/application.yml",
+          "customName": "Implementación de la comunicación"
+        }
+      ]
     }
   ]
 }
