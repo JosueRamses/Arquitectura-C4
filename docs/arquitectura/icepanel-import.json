@@ -94,7 +94,7 @@
       "type": "app",
       "parentId": "sys",
       "caption": "Angular 20.3 / TypeScript 5.9 · HTTP :4200",
-      "description": "Formularios progresivos en español, validaciones, datos oficiales, dólares, carga, errores y estado de caché. Consume solo /api del Gateway.",
+      "description": "Interfaz adaptable con consulta progresiva: correo y RUC; contribuyente y licencia; vehículo y tabla de matrícula. Validaciones, carga, reintento, nueva consulta y avisos de respaldo anterior sin detalles técnicos en pantalla. Consume solo /api del Gateway.",
       "labels": {
         "tecnologias": "Angular, TypeScript",
         "codigo": "frontend-angular"
@@ -104,6 +104,21 @@
           "id": "1796ae92b31a0274626b",
           "url": "https://github.com/JosueRamses/Arquitectura-C4/tree/main/frontend-angular",
           "customName": "Código implementado en GitHub"
+        },
+        {
+          "id": "882c607a97f85739957d",
+          "url": "https://github.com/JosueRamses/Arquitectura-C4/blob/main/frontend-angular/src/main.ts",
+          "customName": "Interfaz implementada en GitHub"
+        },
+        {
+          "id": "c1a9b6202e892facef2c",
+          "url": "https://github.com/JosueRamses/Arquitectura-C4/blob/main/frontend-angular/src/app.html",
+          "customName": "Interfaz implementada en GitHub"
+        },
+        {
+          "id": "fe0db3a9b5da37f204b6",
+          "url": "https://github.com/JosueRamses/Arquitectura-C4/blob/main/frontend-angular/src/styles.css",
+          "customName": "Interfaz implementada en GitHub"
         }
       ],
       "technologyIds": [

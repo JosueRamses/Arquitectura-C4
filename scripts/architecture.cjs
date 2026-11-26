@@ -62,7 +62,11 @@ sri.links = [link('https://srienlinea.sri.gob.ec/','SRI en línea')];
 const ant = object('ant','ANT','system','dom','Sistema externo · HTTPS / HTML','Portal oficial de citaciones y puntos de licencia. Integración conservada en la URL del docente; disponibilidad variable. El cliente diferencia restricciones 401/403 y fallos 502. La extracción solo se permite con HTML válido y selector real verificado, todavía no configurado. La aplicación utiliza el respaldo permitido o informa indisponibilidad.');
 ant.external = true;
 ant.links = [link('https://consultaweb.ant.gob.ec/PortalWEB/','Portal oficial de consultas ANT')];
-object('web','Frontend Angular','app','sys','Angular 20.3 / TypeScript 5.9 · HTTP :4200','Formularios progresivos en español, validaciones, datos oficiales, dólares, carga, errores y estado de caché. Consume solo /api del Gateway.','frontend-angular',['Angular','TypeScript']);
+const web = object('web','Frontend Angular','app','sys','Angular 20.3 / TypeScript 5.9 · HTTP :4200','Interfaz adaptable con consulta progresiva: correo y RUC; contribuyente y licencia; vehículo y tabla de matrícula. Validaciones, carga, reintento, nueva consulta y avisos de respaldo anterior sin detalles técnicos en pantalla. Consume solo /api del Gateway.','frontend-angular',['Angular','TypeScript']);
+for(const source of ['frontend-angular/src/main.ts','frontend-angular/src/app.html','frontend-angular/src/styles.css']) {
+  if(!fs.existsSync(path.join(root,source))) throw Error(`No existe la interfaz modelada: ${source}`);
+  web.links.push(link(repository+'/blob/main/'+source,'Interfaz implementada en GitHub'));
+}
 object('gateway','API Gateway','app','sys','Spring Cloud Gateway / Spring Cloud 2025.0 / Java 21 · HTTP :8080','Enrutamiento HTTP a tres microservicios independientes, CORS y health. Las rutas conservan /api/contribuyentes/**, /api/vehiculos/** y /api/licencias/** sin consumo externo directo desde Angular.','api-gateway',['Spring Cloud Gateway','Spring Boot','Java']);
 const definitions = [
   {id:'tax', folder:'ms-contribuyentes', name:'MS Contribuyentes', port:8081, controller:'ContribuyenteController', service:'ContribuyenteService', client:'SriClient', ids:['tc','ts','ta']},

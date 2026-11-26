@@ -6,6 +6,8 @@ Landscape IcePanel existente: [Consulta Ciudadana](https://app.icepanel.io/lands
 
 Aplicación académica de **ISWZ2202 – Diseño y Arquitectura de Software**, Facultad de Ingeniería y Ciencias Aplicadas. Permite verificar contribuyentes naturales, consultar información vehicular y consultar puntos de licencia mediante fuentes oficiales. Angular utiliza exclusivamente el API Gateway.
 
+La interfaz presenta una consulta progresiva: correo y RUC; resultados del contribuyente y licencia; consulta del vehículo y tabla de matrícula. El correo es obligatorio según la consigna y no se almacena. Incluye diseño adaptable a móvil, indicadores de carga, reintento de licencia y nueva consulta. Los mensajes visibles explican los estados sin exponer respuestas JSON ni detalles internos de infraestructura. El rediseño conserva los contratos y las integraciones del backend.
+
 ## Arquitectura y tecnologías
 
 | Contenedor | Tecnología | Puerto local |

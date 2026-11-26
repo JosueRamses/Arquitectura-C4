@@ -1,0 +1,87 @@
+<svg class="icon-library" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+  <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M5 12h14m-6-6 6 6-6 6"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><path d="m5 12 4 4L19 6"/></symbol>
+  <symbol id="i-person" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21v-2a8 8 0 0 1 16 0v2"/></symbol>
+  <symbol id="i-car" viewBox="0 0 24 24"><path d="m4 9 2-6h12l2 6M3 9h18v10H3zM5 19v2m14-2v2M3 14h18m-14-3v1m10-1v1"/></symbol>
+  <symbol id="i-license" viewBox="0 0 24 24"><rect x="2" y="4" width="20" height="16" rx="3"/><circle cx="8" cy="10" r="2"/><path d="M5 16a3 3 0 0 1 6 0m4-7h4m-4 4h4m-4 4h2"/></symbol>
+  <symbol id="i-shield" viewBox="0 0 24 24"><path d="m12 2 8 3v6c0 5-8 11-8 11S4 16 4 11V5zM8 11l3 3 5-5"/></symbol>
+  <symbol id="i-refresh" viewBox="0 0 24 24"><path d="M20 7a9 9 0 1 0 1 9M20 2v6h-6"/></symbol>
+  <symbol id="i-info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 11v6m0-11v1"/></symbol>
+  <symbol id="i-external" viewBox="0 0 24 24"><path d="M14 3h7v7M21 3 10 14M10 3H3v18h18v-7"/></symbol>
+</svg>
+<a class="skip-link" href="#consulta">Ir a la consulta</a>
+<header class="site-header"><div class="header-inner">
+  <a href="#consulta" class="brand" aria-label="Consulta Ciudadana, inicio"><span class="brand-mark">c<span>.</span></span><span>consulta<span class="brand-light">ciudadana</span><small>INFORMACIÓN QUE TE MUEVE</small></span></a>
+  <div class="header-right"><span class="country"><span class="flag" aria-hidden="true"></span>Ecuador</span><span class="header-divider"></span><span class="service-label">Consultas SRI + ANT</span></div>
+</div></header>
+
+<main id="consulta">
+  <div class="page-heading"><div class="breadcrumb">Inicio <span>/</span> Consulta ciudadana</div><span class="page-kicker">UN TRÁMITE MENOS. MÁS CLARIDAD.</span><h1>Tus consultas, <span>sin vueltas.</span></h1><p>Información tributaria, matrícula vehicular y puntos de licencia.<br class="desktop-break"> Todo en una sola consulta, desde las fuentes oficiales.</p></div>
+  <div class="workspace">
+    <aside class="consultation-sidebar" aria-label="Progreso de la consulta">
+      <div class="sidebar-label">TU CONSULTA</div>
+      <ol class="steps">
+        <li [class.active]="!contribuyente" [class.completed]="!!contribuyente" [attr.aria-current]="!contribuyente?'step':null"><span class="step-number"><svg *ngIf="contribuyente" class="icon"><use href="#i-check"/></svg><ng-container *ngIf="!contribuyente">1</ng-container></span><div><strong>Tus datos</strong><span>Correo y RUC personal</span></div></li>
+        <li [class.active]="!!contribuyente&&!vehiculo" [class.completed]="!!vehiculo" [attr.aria-current]="contribuyente&&!vehiculo?'step':null"><span class="step-number"><svg *ngIf="vehiculo" class="icon"><use href="#i-check"/></svg><ng-container *ngIf="!vehiculo">2</ng-container></span><div><strong>Contribuyente y licencia</strong><span>Información SRI y puntos ANT</span></div></li>
+        <li [class.active]="!!vehiculo" [attr.aria-current]="vehiculo?'step':null"><span class="step-number">3</span><div><strong>Vehículo y matrícula</strong><span>Datos y valores por pagar</span></div></li>
+      </ol>
+      <div class="sidebar-note"><svg class="icon"><use href="#i-shield"/></svg><strong>Consulta con tranquilidad</strong><p>Tu correo solo se valida para esta consulta. No lo almacenamos.</p><span>Usa datos que estés autorizado a consultar.</span></div>
+      <div class="source-caption">Información consultada en<span>SRI <i>·</i> ANT</span></div>
+    </aside>
+    <div class="consultation-content">
+      <div *ngIf="gateway==='No disponible'" class="alert warning" role="status"><svg class="icon"><use href="#i-info"/></svg><div><strong>El servicio no está disponible por el momento</strong><p>Puedes intentarlo de nuevo en unos minutos.</p></div></div>
+
+      <section *ngIf="!contribuyente" class="panel identity" aria-labelledby="identity-title" [attr.aria-busy]="cargando">
+        <div class="panel-heading"><span class="section-icon"><svg class="icon"><use href="#i-person"/></svg></span><span class="section-source">PASO 01</span></div>
+        <h2 id="identity-title">Empecemos por tus datos</h2><p class="section-description">Verifica tu información como contribuyente y consulta los puntos de tu licencia.</p>
+        <form #identity="ngForm" (ngSubmit)="consultar()">
+          <div class="identity-fields">
+            <div class="field"><label for="correo">Correo electrónico</label><input id="correo" name="correo" type="email" email required maxlength="254" [(ngModel)]="correo" #email="ngModel" [disabled]="cargando" placeholder="nombre@correo.com" autocomplete="email" [attr.aria-invalid]="email.touched&&email.invalid" aria-describedby="email-help"><small id="email-help" class="field-help" [class.field-error]="email.touched&&email.invalid">{{email.touched&&email.invalid?'Ingresa un correo electrónico válido.':'Tu correo no se almacena ni recibe mensajes.'}}</small></div>
+            <div class="field"><label for="ruc">RUC de persona natural</label><input id="ruc" name="ruc" required pattern="[0-9]{13}" maxlength="13" inputmode="numeric" [(ngModel)]="ruc" #rucField="ngModel" [disabled]="cargando" placeholder="Ingresa los 13 dígitos" autocomplete="off" [attr.aria-invalid]="rucField.touched&&!validRuc()" aria-describedby="ruc-help"><small id="ruc-help" class="field-help" [class.field-error]="rucField.touched&&!validRuc()">{{rucField.touched&&!validRuc()?'Revisa tu RUC: debe ser válido y terminar en 001.':'Los 10 dígitos de tu cédula + 001.'}}</small></div>
+          </div>
+          <div *ngIf="error" class="alert error-alert" role="alert"><svg class="icon"><use href="#i-info"/></svg><div>{{error}}</div></div>
+          <div class="form-action"><p><svg class="icon"><use href="#i-shield"/></svg>Consulta directa en fuentes oficiales</p><button class="primary" type="submit" [disabled]="identity.invalid||!validRuc()||cargando"><span *ngIf="cargando" class="spinner" aria-hidden="true"></span>{{cargando?'Verificando tus datos…':'Consultar mi información'}}<svg *ngIf="!cargando" class="icon"><use href="#i-arrow"/></svg></button></div>
+        </form>
+        <div class="identity-footnote"><svg class="icon"><use href="#i-info"/></svg><p>Esta consulta está disponible para personas naturales. La información depende de la disponibilidad del SRI y la ANT.</p></div>
+      </section>
+
+      <ng-container *ngIf="contribuyente as c">
+        <div class="results-topline"><span><svg class="icon"><use href="#i-check"/></svg>Contribuyente verificado en el SRI</span><button type="button" class="text-button" (click)="reset()" [disabled]="busy"><svg class="icon"><use href="#i-refresh"/></svg>Nueva consulta</button></div>
+        <section class="panel contributor" aria-labelledby="contributor-title">
+          <div class="result-heading"><span class="section-icon"><svg class="icon"><use href="#i-person"/></svg></span><div><span class="overline">CONTRIBUYENTE</span><h2 id="contributor-title">{{c.nombre||'Nombre no informado por el SRI'}}</h2></div><span class="source-tag">Fuente: SRI</span></div>
+          <dl class="contributor-data"><div><dt>RUC</dt><dd>{{c.ruc}}</dd></div><div><dt>Tipo de contribuyente</dt><dd>Persona natural</dd></div><div *ngIf="c.estado"><dt>Estado</dt><dd><span class="badge" [class.neutral]="c.estado.toUpperCase()!=='ACTIVO'">{{c.estado}}</span></dd></div><div *ngIf="activity() as activity" class="activity"><dt>Actividad económica principal</dt><dd>{{activity}}</dd></div></dl>
+        </section>
+
+        <section class="panel license-panel" aria-labelledby="license-title" [attr.aria-busy]="cargandoLicencia">
+          <div class="license-heading"><span class="section-icon"><svg class="icon"><use href="#i-license"/></svg></span><div><span class="overline">TU LICENCIA</span><h2 id="license-title">Puntos de licencia</h2></div><span class="source-tag">Fuente: ANT</span></div>
+          <div *ngIf="cargandoLicencia" class="license-loading" role="status"><span class="spinner"></span>Consultando los puntos en la ANT…</div>
+          <ng-container *ngIf="!cargandoLicencia&&licencia as l">
+            <div class="license-content" [class.unavailable]="l.puntos===null"><div class="points"><strong>{{l.puntos===null?'—':l.puntos}}</strong><span>{{l.puntos===null?'Sin información':'puntos disponibles'}}</span></div><div class="license-explanation"><span class="badge" [class.warning]="l.desactualizado||l.puntos===null">{{l.desactualizado?'Última consulta guardada':l.puntos===null?'Consulta no disponible':'Consulta verificada'}}</span><p role="status">{{licenseText(l)}}</p><small *ngIf="l.actualizadoEn">Actualizado el {{l.actualizadoEn|date:'dd/MM/yyyy · HH:mm':'-0500'}}</small></div></div>
+            <div class="license-actions"><a href="https://consultaweb.ant.gob.ec/PortalWEB/paginas/clientes/clp_criterio_consulta.jsp" target="_blank" rel="noopener noreferrer">Ir al portal de la ANT<svg class="icon"><use href="#i-external"/></svg></a><button type="button" class="text-button" (click)="consultarLicencia()" [disabled]="cargandoLicencia"><svg class="icon"><use href="#i-refresh"/></svg>Volver a consultar</button></div>
+          </ng-container>
+        </section>
+
+        <section id="vehiculo" class="panel vehicle-panel" aria-labelledby="vehicle-title" [attr.aria-busy]="cargandoVehiculo">
+          <div class="result-heading"><span class="section-icon"><svg class="icon"><use href="#i-car"/></svg></span><div><span class="overline">VEHÍCULO Y MATRÍCULA</span><h2 id="vehicle-title">Consulta tu vehículo</h2></div><span class="source-tag">Fuente: SRI</span></div>
+          <p class="section-description">Ingresa una placa para ver sus datos y los valores de matrícula informados por el SRI.</p>
+          <form #vehicleForm="ngForm" (ngSubmit)="consultarVehiculo()"><label for="placa">Placa del vehículo</label><div class="plate-form"><div class="plate-input"><span aria-hidden="true">EC</span><input id="placa" name="placa" [(ngModel)]="placa" (ngModelChange)="placa=$event.toUpperCase()" #plateField="ngModel" required pattern="[A-Z]{3}-?[0-9]{3,4}|[A-Z]{2}[0-9]{3}[A-Z]" maxlength="8" placeholder="ABC1234" [disabled]="cargandoVehiculo" autocomplete="off" autocapitalize="characters" [attr.aria-invalid]="plateField.touched&&plateField.invalid" aria-describedby="plate-help"></div><button class="primary" type="submit" [disabled]="vehicleForm.invalid||cargandoVehiculo"><span *ngIf="cargandoVehiculo" class="spinner" aria-hidden="true"></span>{{cargandoVehiculo?'Consultando…':'Consultar vehículo'}}<svg *ngIf="!cargandoVehiculo" class="icon"><use href="#i-arrow"/></svg></button></div><small id="plate-help" class="field-help" [class.field-error]="plateField.touched&&plateField.invalid">{{plateField.touched&&plateField.invalid?'Revisa el formato de la placa ingresada.':'Admite placas de automóvil y motocicleta.'}}</small></form>
+          <div *ngIf="errorVehiculo" class="alert error-alert" role="alert"><svg class="icon"><use href="#i-info"/></svg><div>{{errorVehiculo}}</div></div>
+          <div *ngIf="cargandoVehiculo" class="vehicle-loading" role="status"><div class="skeleton"></div><div class="skeleton short"></div><p>Buscando información y valores de matrícula…</p></div>
+
+          <div *ngIf="vehiculo as v" class="vehicle-result" aria-live="polite">
+            <div class="vehicle-result-heading"><span class="overline">INFORMACIÓN DEL VEHÍCULO</span><span class="verified-label"><svg class="icon"><use href="#i-check"/></svg>Placa verificada</span></div>
+            <dl class="vehicle-data"><div *ngFor="let field of vehicleFields(v.vehiculo)"><dt>{{field.label}}</dt><dd>{{field.value}}</dd></div></dl>
+            <div class="charges-heading"><h3>Valores de matrícula</h3><span>USD · Dólares estadounidenses</span></div>
+            <div class="charges" *ngIf="v.conceptos?.length"><table><caption class="sr-only">Rubros de matrícula informados por el SRI</caption><thead><tr><th scope="col">Concepto</th><th scope="col">Valor</th></tr></thead><tbody><tr *ngFor="let item of v.conceptos"><th scope="row">{{item.concepto}}</th><td>{{item.valor|currency:'USD':'symbol':'1.2-2'}}</td></tr></tbody></table></div>
+            <div class="total" [class.unconfirmed]="v.total===null"><div><span>{{v.total===null?'Total no confirmado':'Total informado por el SRI'}}</span><small>{{v.total===null?'No se recibió un total verificable.':'Suma de los conceptos recibidos.'}}</small></div><strong>{{v.total===null?'—':(v.total|currency:'USD':'symbol':'1.2-2')}}</strong></div>
+            <p class="result-note"><svg class="icon"><use href="#i-info"/></svg>{{v.total===null?(v.rubros===null?'El SRI no devolvió rubros para esta consulta. Esto no confirma que no existan valores pendientes.':'El SRI devolvió información que no permite confirmar un total. Revisa los valores en su portal oficial.'):'Los valores corresponden a la respuesta del SRI. Esta consulta no es un comprobante de pago.'}}</p>
+            <a class="official-link" href="https://srienlinea.sri.gob.ec/sri-en-linea/SriVehiculosWeb/ConsultaValoresPagarVehiculo/Consultas/consultaRubros" target="_blank" rel="noopener noreferrer">Revisar en SRI en línea<svg class="icon"><use href="#i-external"/></svg></a>
+          </div>
+        </section>
+        <p class="ownership-note">La consulta de una placa no acredita la propiedad del vehículo.</p>
+      </ng-container>
+      <div *ngIf="!contribuyente" class="service-overview"><div><svg class="icon"><use href="#i-person"/></svg><strong>Contribuyente</strong><span>Identificación y estado en el SRI</span></div><div><svg class="icon"><use href="#i-license"/></svg><strong>Licencia</strong><span>Puntos informados por la ANT</span></div><div><svg class="icon"><use href="#i-car"/></svg><strong>Matrícula</strong><span>Vehículo y valores por pagar</span></div></div>
+    </div>
+  </div>
+</main>
+<footer class="site-footer"><div><span class="footer-brand">consulta<span>ciudadana</span></span><p>La información es el primer paso.</p></div><p>Servicio independiente de consulta.<br>La disponibilidad de los datos depende del SRI y la ANT.</p><span class="footer-country"><span class="flag" aria-hidden="true"></span>Hecho para Ecuador</span></footer>
