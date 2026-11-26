@@ -2,6 +2,10 @@ package ec.consulta;
 import org.junit.jupiter.api.Test;import static org.junit.jupiter.api.Assertions.*;import static org.mockito.Mockito.*;import com.fasterxml.jackson.databind.*;import java.math.BigDecimal;
 class VehiculoTest {
  final ObjectMapper mapper=new ObjectMapper();
+ @Test void verifiedOfficialSchemaPreservesChargesWithZeroAmounts()throws Exception{
+  var rows=VehiculoService.extract(mapper.readTree("[{\"codigoRubro\":101,\"tipoBeneficiario\":null,\"nombreCortoBeneficiario\":\"SPPAT\",\"codigoTipoDeuda\":\"MATRICULA\",\"descripcionTipoDeuda\":\"Matrícula\",\"descripcionRubro\":\"TASA SPPAT\",\"valorRubro\":42.50,\"anioDesdePago\":2026,\"anioHastaPago\":2026},{\"codigoRubro\":102,\"tipoBeneficiario\":null,\"nombreCortoBeneficiario\":\"SRI\",\"codigoTipoDeuda\":\"MATRICULA\",\"descripcionTipoDeuda\":\"Matrícula\",\"descripcionRubro\":\"IMPUESTO A LA PROPIEDAD\",\"valorRubro\":0,\"anioDesdePago\":2026,\"anioHastaPago\":2026},{\"codigoRubro\":103,\"tipoBeneficiario\":null,\"nombreCortoBeneficiario\":\"ANT\",\"codigoTipoDeuda\":\"MATRICULA\",\"descripcionTipoDeuda\":\"Matrícula\",\"descripcionRubro\":\"TASAS ANT\",\"valorRubro\":3.25,\"anioDesdePago\":2026,\"anioHastaPago\":2026}]"));
+  assertNotNull(rows);assertEquals(3,rows.size());assertEquals(0,rows.get(1).valor().signum());assertEquals(new BigDecimal("45.75"),rows.stream().map(VehiculoService.Rubro::valor).reduce(BigDecimal.ZERO,BigDecimal::add));
+ }
  @Test void emptyOfficialResponseIsNeitherNotFoundNorZeroCharges()throws Exception{
   var server=com.sun.net.httpserver.HttpServer.create(new java.net.InetSocketAddress("127.0.0.1",0),0);
   server.createContext("/exists",exchange->{exchange.sendResponseHeaders(204,-1);exchange.close();});server.start();

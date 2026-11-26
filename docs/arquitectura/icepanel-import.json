@@ -351,7 +351,7 @@
       "type": "component",
       "parentId": "car",
       "caption": "Lógica de consulta",
-      "description": "Consulta existencia por placa, obtiene codigoVehiculo de la respuesta y consulta rubros con ese código real mediante getOptional. HTTP 204 de rubros conserva el vehículo y devuelve total null con aviso explícito. Calcula BigDecimal únicamente en formatos inequívocos, sin duplicados ni subtotales. No acredita propiedad del vehículo.",
+      "description": "Consulta existencia por placa, obtiene codigoVehiculo de la respuesta y consulta rubros con ese código real mediante getOptional. HTTP 204 de rubros conserva el vehículo y devuelve total null con aviso explícito. En filas oficiales codigoRubro, descripcionRubro y valorRubro calcula BigDecimal y conserva valores cero; rechaza duplicados, subtotales y formatos ambiguos. No acredita propiedad del vehículo.",
       "labels": {
         "tecnologias": "Java",
         "codigo": "ms-vehiculos/src/main/java/ec/consulta/VehiculoService.java"
