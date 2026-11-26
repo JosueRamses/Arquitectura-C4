@@ -1,0 +1,62 @@
+{
+  "Angular": {
+    "id": "cvl7dwBbKnKMxuYpuEdM",
+    "name": "Angular",
+    "restrictions": [
+      "app",
+      "group"
+    ]
+  },
+  "TypeScript": {
+    "id": "unq9eBvtMu9rTTSQqqUP",
+    "name": "TypeScript",
+    "restrictions": [
+      "app",
+      "component",
+      "group"
+    ]
+  },
+  "Java": {
+    "id": "7NkfDiLzoYOcrpKn1Xda",
+    "name": "Java",
+    "restrictions": [
+      "app",
+      "component",
+      "group"
+    ]
+  },
+  "Spring Boot": {
+    "id": "y0A4IinymBFl3GEKZXjM",
+    "name": "Spring Boot",
+    "restrictions": [
+      "group",
+      "system",
+      "app"
+    ]
+  },
+  "Spring Cloud Gateway": {
+    "id": "f3Sxvw8kWztispAEydWO",
+    "name": "Spring Cloud Gateway",
+    "restrictions": [
+      "group",
+      "app",
+      "component"
+    ]
+  },
+  "Redis": {
+    "id": "Yj8CPPXztMD4nMBi04y8",
+    "name": "Redis",
+    "restrictions": [
+      "group",
+      "store"
+    ]
+  },
+  "Maven": {
+    "id": "9SKffejufK7Kbr96NHrW",
+    "name": "Apache Maven",
+    "restrictions": [
+      "app",
+      "group"
+    ]
+  }
+}

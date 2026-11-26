@@ -1,7 +1,7 @@
 {
-  "validatedAt": "2026-11-26T21:37:44.584Z",
+  "validatedAt": "2026-11-26T21:52:07.449Z",
   "schema": "https://api.icepanel.io/v1/schemas/LandscapeImportData",
   "valid": true,
-  "objects": 21,
-  "connections": 20
+  "objects": 26,
+  "connections": 31
 }

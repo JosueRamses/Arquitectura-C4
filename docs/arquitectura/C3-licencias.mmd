@@ -1,7 +1,18 @@
 flowchart LR
- gateway[API Gateway] --> controller[LicenciaController]
- controller --> service[LicenciaService]
- service -->|Circuit Breaker 50% · 30 s| client[AntClient]
- client --> external[ANT · Jsoup · timeout 5 s]
- service -->|Cache-Aside 15 min · Fallback 24 h| cache[RedisCacheRepository]
- cache -->|HMAC · TTL restante 24 h · sin TLS solo sintéticos| redis[(Redis Cloud DISARQSFT · AWS)]
+  ant["ANT · Portal externo HTTPS / HTML"]
+  gateway["API Gateway · Spring Cloud Gateway 2025.0 / Java 21 · HTTP :8080"]
+  lc["LicenciaController · REST controller / DTOs / Jakarta Validation"]
+  ls["LicenciaService · Resilience4j 2.3.0 / Cache-Aside / Fallback"]
+  la["AntClient · Java HttpClient / Jsoup 1.21.2"]
+  lic_input["Input · Validación ecuatoriana"]
+  lic_errors["Errors · RestControllerAdvice / ApiException"]
+  lr["RedisCacheRepository · Spring Data Redis / Lettuce / HMAC-SHA256"]
+  redis["Redis Cloud DISARQSFT · Redis Cloud · AWS · 30 MB · TCP :16824"]
+  gateway -->|"HTTP JSON · entrada al controlador"| lc
+  lc -->|"DTO de solicitud validado"| ls
+  lc -->|"Valida RUC y deriva cédula natural"| lic_input
+  lic_errors -->|"Advice MVC: transforma excepciones en respuestas HTTP"| lc
+  ls -->|"Circuit Breaker Resilience4j · consulta si caché no fresca"| la
+  la -->|"HTTPS HTML · Jsoup · sin selector aún verificado"| ant
+  ls -->|"Cache-Aside 15 min · Fallback hasta 24 h"| lr
+  lr -->|"HMAC · TTL restante 24 h · bloqueo de datos personales sin TLS"| redis

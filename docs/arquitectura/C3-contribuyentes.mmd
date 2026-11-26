@@ -1,5 +1,14 @@
 flowchart LR
- gateway[API Gateway] --> controller[ContribuyenteController]
- controller --> service[ContribuyenteService]
- service -->|HTTPS REST| client[SriClient]
- client --> external[SRI]
+  sri["SRI · Servicio externo HTTPS / REST"]
+  gateway["API Gateway · Spring Cloud Gateway 2025.0 / Java 21 · HTTP :8080"]
+  tc["ContribuyenteController · REST controller / DTOs / Jakarta Validation"]
+  ts["ContribuyenteService · Lógica de consulta"]
+  ta["SriClient · Java HttpClient / Jackson"]
+  tax_input["Input · Validación ecuatoriana"]
+  tax_errors["Errors · RestControllerAdvice / ApiException"]
+  gateway -->|"HTTP JSON · entrada al controlador"| tc
+  tc -->|"DTO de solicitud validado"| ts
+  tc -->|"Valida RUC y deriva cédula natural"| tax_input
+  tax_errors -->|"Advice MVC: transforma excepciones en respuestas HTTP"| tc
+  ts -->|"Consulta existencia y datos oficiales"| ta
+  ta -->|"HTTPS JSON · SRI oficial"| sri

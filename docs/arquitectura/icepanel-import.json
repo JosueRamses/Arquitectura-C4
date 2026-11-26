@@ -2,272 +2,772 @@
   "namespace": "consulta-ciudadana-sri-ant",
   "modelObjects": [
     {
-      "id": "domain-consulta",
-      "name": "Consulta Ciudadana",
-      "type": "domain"
+      "id": "dom",
+      "name": "Consulta ciudadana SRI-ANT",
+      "type": "domain",
+      "caption": "Arquitectura C4",
+      "description": "Modelo derivado del código y la configuración efectiva.",
+      "labels": {
+        "tecnologias": "No aplica"
+      }
     },
     {
-      "id": "ciudadano",
+      "id": "user",
       "name": "Ciudadano",
       "type": "actor",
-      "parentId": "domain-consulta"
+      "parentId": "dom",
+      "caption": "Navegador web",
+      "description": "Ingresa un correo, RUC natural y placa autorizados. La consulta vehicular no acredita propiedad.",
+      "labels": {
+        "tecnologias": "No aplica"
+      }
     },
     {
-      "id": "consulta",
-      "name": "Sistema Consulta Ciudadana",
+      "id": "sys",
+      "name": "Consulta Ciudadana",
       "type": "system",
-      "parentId": "domain-consulta"
+      "parentId": "dom",
+      "caption": "Angular + Gateway + tres microservicios",
+      "description": "Validación SRI; datos vehiculares y rubros; consulta ANT con caché y resiliencia.",
+      "labels": {
+        "tecnologias": "No aplica"
+      }
     },
     {
       "id": "sri",
       "name": "SRI",
       "type": "system",
-      "parentId": "domain-consulta"
+      "parentId": "dom",
+      "caption": "Servicio externo HTTPS / REST",
+      "description": "Existencia y datos del contribuyente, vehículo y rubros. No se inventan resultados.",
+      "labels": {
+        "tecnologias": "No aplica"
+      },
+      "links": [
+        {
+          "id": "ad11643afea48a1cdde2",
+          "url": "https://srienlinea.sri.gob.ec/",
+          "customName": "SRI en línea"
+        }
+      ],
+      "external": true
     },
     {
       "id": "ant",
       "name": "ANT",
       "type": "system",
-      "parentId": "domain-consulta"
+      "parentId": "dom",
+      "caption": "Portal externo HTTPS / HTML",
+      "description": "Inspección pendiente: inicialmente HTTP 401; revisión del 26/11/2026 devolvió HTTP 502. Sin selector HTML verificado. El cliente informa indisponibilidad y conserva el fallback.",
+      "labels": {
+        "tecnologias": "No aplica"
+      },
+      "links": [
+        {
+          "id": "b46f0924ea265d1150dd",
+          "url": "https://consultaweb.ant.gob.ec/PortalWEB/",
+          "customName": "Portal oficial de consultas ANT"
+        }
+      ],
+      "external": true
     },
     {
-      "id": "frontend",
+      "id": "web",
       "name": "Frontend Angular",
       "type": "app",
-      "parentId": "consulta"
+      "parentId": "sys",
+      "caption": "Angular 20.3 / TypeScript 5.9 · HTTP :4200",
+      "description": "Formularios progresivos en español, validaciones, datos oficiales, dólares, carga, errores y estado de caché. Consume solo /api del Gateway.",
+      "labels": {
+        "tecnologias": "Angular, TypeScript",
+        "codigo": "frontend-angular"
+      },
+      "technologyIds": [
+        "cvl7dwBbKnKMxuYpuEdM",
+        "unq9eBvtMu9rTTSQqqUP"
+      ],
+      "icon": {
+        "technologyId": "cvl7dwBbKnKMxuYpuEdM"
+      }
     },
     {
       "id": "gateway",
-      "name": "API Gateway · Spring Cloud",
+      "name": "API Gateway",
       "type": "app",
-      "parentId": "consulta"
+      "parentId": "sys",
+      "caption": "Spring Cloud Gateway 2025.0 / Java 21 · HTTP :8080",
+      "description": "Enrutamiento HTTP a tres microservicios, CORS y health. Configuración real en application.yml.",
+      "labels": {
+        "tecnologias": "Spring Cloud Gateway, Spring Boot, Java",
+        "codigo": "api-gateway"
+      },
+      "technologyIds": [
+        "f3Sxvw8kWztispAEydWO",
+        "y0A4IinymBFl3GEKZXjM",
+        "7NkfDiLzoYOcrpKn1Xda"
+      ],
+      "icon": {
+        "technologyId": "f3Sxvw8kWztispAEydWO"
+      }
     },
     {
-      "id": "contribuyentes",
-      "name": "Microservicio contribuyentes",
+      "id": "tax",
+      "name": "MS Contribuyentes",
       "type": "app",
-      "parentId": "consulta"
+      "parentId": "sys",
+      "caption": "Java 21 / Spring Boot 3.5.8 / Maven · HTTP :8081",
+      "description": "Confirma existencia, RUC coincidente y tipo persona natural según respuesta SRI.",
+      "labels": {
+        "tecnologias": "Spring Boot, Java, Maven",
+        "codigo": "ms-contribuyentes"
+      },
+      "technologyIds": [
+        "y0A4IinymBFl3GEKZXjM",
+        "7NkfDiLzoYOcrpKn1Xda",
+        "9SKffejufK7Kbr96NHrW"
+      ],
+      "icon": {
+        "technologyId": "y0A4IinymBFl3GEKZXjM"
+      }
     },
     {
-      "id": "vehiculos",
-      "name": "Microservicio vehículos",
-      "type": "app",
-      "parentId": "consulta"
+      "id": "tc",
+      "name": "ContribuyenteController",
+      "type": "component",
+      "parentId": "tax",
+      "caption": "REST controller / DTOs / Jakarta Validation",
+      "description": "Recibe POST /api/contribuyentes/consultar; valida entradas y delega al servicio.",
+      "labels": {
+        "tecnologias": "Spring Boot, Java",
+        "codigo": "ms-contribuyentes/src/main/java/ec/consulta/ContribuyenteController.java"
+      },
+      "technologyIds": [
+        "7NkfDiLzoYOcrpKn1Xda"
+      ],
+      "icon": {
+        "technologyId": "7NkfDiLzoYOcrpKn1Xda"
+      }
     },
     {
-      "id": "licencias",
-      "name": "Microservicio licencias",
+      "id": "ts",
+      "name": "ContribuyenteService",
+      "type": "component",
+      "parentId": "tax",
+      "caption": "Lógica de consulta",
+      "description": "Coordina consultas oficiales, valida la respuesta y devuelve DTOs. No usa fixtures en producción.",
+      "labels": {
+        "tecnologias": "Java",
+        "codigo": "ms-contribuyentes/src/main/java/ec/consulta/ContribuyenteService.java"
+      },
+      "technologyIds": [
+        "7NkfDiLzoYOcrpKn1Xda"
+      ],
+      "icon": {
+        "technologyId": "7NkfDiLzoYOcrpKn1Xda"
+      }
+    },
+    {
+      "id": "ta",
+      "name": "SriClient",
+      "type": "component",
+      "parentId": "tax",
+      "caption": "Java HttpClient / Jackson",
+      "description": "Cliente HTTPS SRI con timeout y comprobación HTTP/JSON; no registra datos personales.",
+      "labels": {
+        "tecnologias": "Java",
+        "codigo": "ms-contribuyentes/src/main/java/ec/consulta/SriClient.java"
+      },
+      "technologyIds": [
+        "7NkfDiLzoYOcrpKn1Xda"
+      ],
+      "icon": {
+        "technologyId": "7NkfDiLzoYOcrpKn1Xda"
+      }
+    },
+    {
+      "id": "tax-input",
+      "name": "Input",
+      "type": "component",
+      "parentId": "tax",
+      "caption": "Validación ecuatoriana",
+      "description": "Valida RUC natural, cédula y dígito verificador en el backend.",
+      "labels": {
+        "tecnologias": "Java",
+        "codigo": "ms-contribuyentes/src/main/java/ec/consulta/Input.java"
+      },
+      "technologyIds": [
+        "7NkfDiLzoYOcrpKn1Xda"
+      ],
+      "icon": {
+        "technologyId": "7NkfDiLzoYOcrpKn1Xda"
+      }
+    },
+    {
+      "id": "tax-errors",
+      "name": "Errors",
+      "type": "component",
+      "parentId": "tax",
+      "caption": "RestControllerAdvice / ApiException",
+      "description": "Manejo centralizado de validación, errores de dominio y fallos externos sin datos personales en mensajes técnicos.",
+      "labels": {
+        "tecnologias": "Spring Boot, Java",
+        "codigo": "ms-contribuyentes/src/main/java/ec/consulta/Errors.java"
+      },
+      "technologyIds": [
+        "7NkfDiLzoYOcrpKn1Xda"
+      ],
+      "icon": {
+        "technologyId": "7NkfDiLzoYOcrpKn1Xda"
+      }
+    },
+    {
+      "id": "car",
+      "name": "MS Vehículos",
       "type": "app",
-      "parentId": "consulta"
+      "parentId": "sys",
+      "caption": "Java 21 / Spring Boot 3.5.8 / Maven · HTTP :8082",
+      "description": "Confirma placa, obtiene codigoVehiculo real y consulta rubros; BigDecimal; formatos ambiguos no se suman.",
+      "labels": {
+        "tecnologias": "Spring Boot, Java, Maven",
+        "codigo": "ms-vehiculos"
+      },
+      "technologyIds": [
+        "y0A4IinymBFl3GEKZXjM",
+        "7NkfDiLzoYOcrpKn1Xda",
+        "9SKffejufK7Kbr96NHrW"
+      ],
+      "icon": {
+        "technologyId": "y0A4IinymBFl3GEKZXjM"
+      }
+    },
+    {
+      "id": "vc",
+      "name": "VehiculoController",
+      "type": "component",
+      "parentId": "car",
+      "caption": "REST controller / DTOs / Jakarta Validation",
+      "description": "Recibe POST /api/vehiculos/consultar; valida entradas y delega al servicio.",
+      "labels": {
+        "tecnologias": "Spring Boot, Java",
+        "codigo": "ms-vehiculos/src/main/java/ec/consulta/VehiculoController.java"
+      },
+      "technologyIds": [
+        "7NkfDiLzoYOcrpKn1Xda"
+      ],
+      "icon": {
+        "technologyId": "7NkfDiLzoYOcrpKn1Xda"
+      }
+    },
+    {
+      "id": "vs",
+      "name": "VehiculoService",
+      "type": "component",
+      "parentId": "car",
+      "caption": "Lógica de consulta",
+      "description": "Coordina consultas oficiales, valida la respuesta y devuelve DTOs. No usa fixtures en producción.",
+      "labels": {
+        "tecnologias": "Java",
+        "codigo": "ms-vehiculos/src/main/java/ec/consulta/VehiculoService.java"
+      },
+      "technologyIds": [
+        "7NkfDiLzoYOcrpKn1Xda"
+      ],
+      "icon": {
+        "technologyId": "7NkfDiLzoYOcrpKn1Xda"
+      }
+    },
+    {
+      "id": "va",
+      "name": "SriClient",
+      "type": "component",
+      "parentId": "car",
+      "caption": "Java HttpClient / Jackson",
+      "description": "Cliente HTTPS SRI con timeout y comprobación HTTP/JSON; no registra datos personales.",
+      "labels": {
+        "tecnologias": "Java",
+        "codigo": "ms-vehiculos/src/main/java/ec/consulta/SriClient.java"
+      },
+      "technologyIds": [
+        "7NkfDiLzoYOcrpKn1Xda"
+      ],
+      "icon": {
+        "technologyId": "7NkfDiLzoYOcrpKn1Xda"
+      }
+    },
+    {
+      "id": "car-errors",
+      "name": "Errors",
+      "type": "component",
+      "parentId": "car",
+      "caption": "RestControllerAdvice / ApiException",
+      "description": "Manejo centralizado de validación, errores de dominio y fallos externos sin datos personales en mensajes técnicos.",
+      "labels": {
+        "tecnologias": "Spring Boot, Java",
+        "codigo": "ms-vehiculos/src/main/java/ec/consulta/Errors.java"
+      },
+      "technologyIds": [
+        "7NkfDiLzoYOcrpKn1Xda"
+      ],
+      "icon": {
+        "technologyId": "7NkfDiLzoYOcrpKn1Xda"
+      }
+    },
+    {
+      "id": "lic",
+      "name": "MS Licencias",
+      "type": "app",
+      "parentId": "sys",
+      "caption": "Java 21 / Spring Boot 3.5.8 / Maven · HTTP :8083",
+      "description": "Cache-Aside: datos frescos 15 min; respaldo máximo 24 h; circuito Resilience4j 50%, mínimo 4 llamadas, apertura 30 s; Jsoup; timeout ANT 5 s.",
+      "labels": {
+        "tecnologias": "Spring Boot, Java, Maven",
+        "codigo": "ms-licencias"
+      },
+      "technologyIds": [
+        "y0A4IinymBFl3GEKZXjM",
+        "7NkfDiLzoYOcrpKn1Xda",
+        "9SKffejufK7Kbr96NHrW"
+      ],
+      "icon": {
+        "technologyId": "y0A4IinymBFl3GEKZXjM"
+      }
+    },
+    {
+      "id": "lc",
+      "name": "LicenciaController",
+      "type": "component",
+      "parentId": "lic",
+      "caption": "REST controller / DTOs / Jakarta Validation",
+      "description": "Recibe POST /api/licencias/consultar; valida entradas y delega al servicio.",
+      "labels": {
+        "tecnologias": "Spring Boot, Java",
+        "codigo": "ms-licencias/src/main/java/ec/consulta/LicenciaController.java"
+      },
+      "technologyIds": [
+        "7NkfDiLzoYOcrpKn1Xda"
+      ],
+      "icon": {
+        "technologyId": "7NkfDiLzoYOcrpKn1Xda"
+      }
+    },
+    {
+      "id": "ls",
+      "name": "LicenciaService",
+      "type": "component",
+      "parentId": "lic",
+      "caption": "Resilience4j 2.3.0 / Cache-Aside / Fallback",
+      "description": "Lee Redis antes de ANT. Respuesta válida de cero puntos distinta de error. Ante fallo recupera el respaldo vigente y marca desactualizado; sin respaldo informa indisponibilidad. No prolonga TTL.",
+      "labels": {
+        "tecnologias": "Java, Resilience4j",
+        "codigo": "ms-licencias/src/main/java/ec/consulta/LicenciaService.java"
+      },
+      "technologyIds": [
+        "7NkfDiLzoYOcrpKn1Xda"
+      ],
+      "icon": {
+        "technologyId": "7NkfDiLzoYOcrpKn1Xda"
+      }
+    },
+    {
+      "id": "la",
+      "name": "AntClient",
+      "type": "component",
+      "parentId": "lic",
+      "caption": "Java HttpClient / Jsoup 1.21.2",
+      "description": "Consulta la URL oficial ANT solo con selector verificado configurado; timeout de conexión y solicitud 5 s; rechaza restricciones, CAPTCHA y valores inválidos.",
+      "labels": {
+        "tecnologias": "Java, Jsoup",
+        "codigo": "ms-licencias/src/main/java/ec/consulta/AntClient.java"
+      },
+      "technologyIds": [
+        "7NkfDiLzoYOcrpKn1Xda"
+      ],
+      "icon": {
+        "technologyId": "7NkfDiLzoYOcrpKn1Xda"
+      }
+    },
+    {
+      "id": "lic-input",
+      "name": "Input",
+      "type": "component",
+      "parentId": "lic",
+      "caption": "Validación ecuatoriana",
+      "description": "Valida RUC natural, cédula y dígito verificador en el backend.",
+      "labels": {
+        "tecnologias": "Java",
+        "codigo": "ms-licencias/src/main/java/ec/consulta/Input.java"
+      },
+      "technologyIds": [
+        "7NkfDiLzoYOcrpKn1Xda"
+      ],
+      "icon": {
+        "technologyId": "7NkfDiLzoYOcrpKn1Xda"
+      }
+    },
+    {
+      "id": "lic-errors",
+      "name": "Errors",
+      "type": "component",
+      "parentId": "lic",
+      "caption": "RestControllerAdvice / ApiException",
+      "description": "Manejo centralizado de validación, errores de dominio y fallos externos sin datos personales en mensajes técnicos.",
+      "labels": {
+        "tecnologias": "Spring Boot, Java",
+        "codigo": "ms-licencias/src/main/java/ec/consulta/Errors.java"
+      },
+      "technologyIds": [
+        "7NkfDiLzoYOcrpKn1Xda"
+      ],
+      "icon": {
+        "technologyId": "7NkfDiLzoYOcrpKn1Xda"
+      }
+    },
+    {
+      "id": "lr",
+      "name": "RedisCacheRepository",
+      "type": "component",
+      "parentId": "lic",
+      "caption": "Spring Data Redis / Lettuce / HMAC-SHA256",
+      "description": "Implementa CacheRepository. GET/SET con TTL restante hasta 24 h desde la obtención. Sin TLS solo acepta synthetic:UUID; namespace de pruebas separado. Rechaza cédulas reales antes de acceder a Redis.",
+      "labels": {
+        "tecnologias": "Java, Redis",
+        "codigo": "ms-licencias/src/main/java/ec/consulta/RedisCacheRepository.java"
+      },
+      "technologyIds": [
+        "7NkfDiLzoYOcrpKn1Xda"
+      ],
+      "icon": {
+        "technologyId": "7NkfDiLzoYOcrpKn1Xda"
+      }
     },
     {
       "id": "redis",
-      "name": "Redis Cloud DISARQSFT · AWS · 30 MB",
+      "name": "Redis Cloud DISARQSFT",
       "type": "store",
-      "parentId": "consulta",
-      "description": "Servicio Cloud externo. RESP TCP sin TLS, puerto 16824: exclusivamente pruebas sintéticas. Datos personales bloqueados hasta habilitar TLS. Claves HMAC; frescura 15 min; retención máxima 24 h. Credenciales solo en .env ignorado por Git."
-    },
-    {
-      "id": "contribuyentes-ContribuyenteController",
-      "name": "ContribuyenteController",
-      "type": "component",
-      "parentId": "contribuyentes"
-    },
-    {
-      "id": "contribuyentes-ContribuyenteService",
-      "name": "ContribuyenteService",
-      "type": "component",
-      "parentId": "contribuyentes"
-    },
-    {
-      "id": "contribuyentes-SriClient",
-      "name": "SriClient",
-      "type": "component",
-      "parentId": "contribuyentes"
-    },
-    {
-      "id": "vehiculos-VehiculoController",
-      "name": "VehiculoController",
-      "type": "component",
-      "parentId": "vehiculos"
-    },
-    {
-      "id": "vehiculos-VehiculoService",
-      "name": "VehiculoService",
-      "type": "component",
-      "parentId": "vehiculos"
-    },
-    {
-      "id": "vehiculos-SriClient",
-      "name": "SriClient",
-      "type": "component",
-      "parentId": "vehiculos"
-    },
-    {
-      "id": "licencias-LicenciaController",
-      "name": "LicenciaController",
-      "type": "component",
-      "parentId": "licencias"
-    },
-    {
-      "id": "licencias-LicenciaService",
-      "name": "LicenciaService",
-      "type": "component",
-      "parentId": "licencias"
-    },
-    {
-      "id": "licencias-AntClient",
-      "name": "AntClient",
-      "type": "component",
-      "parentId": "licencias"
-    },
-    {
-      "id": "licencias-RedisCacheRepository",
-      "name": "RedisCacheRepository",
-      "type": "component",
-      "parentId": "licencias"
+      "parentId": "sys",
+      "caption": "Redis Cloud · AWS · 30 MB · TCP :16824",
+      "description": "Servicio Cloud administrado externo. Configuración actual sin TLS: exclusivamente datos sintéticos. Datos personales bloqueados hasta usar transporte cifrado. Caché fresca 15 min, retención máxima 24 h. Host y secretos solo en .env ignorado por Git.",
+      "labels": {
+        "tecnologias": "Redis"
+      },
+      "technologyIds": [
+        "Yj8CPPXztMD4nMBi04y8"
+      ],
+      "icon": {
+        "technologyId": "Yj8CPPXztMD4nMBi04y8"
+      }
     }
   ],
   "modelConnections": [
     {
-      "id": "conn-ciudadano-frontend",
-      "originId": "ciudadano",
-      "targetId": "frontend",
-      "name": "Consulta mediante navegador",
-      "direction": "outgoing"
+      "id": "conn-gateway-tax",
+      "originId": "gateway",
+      "targetId": "tax",
+      "name": "POST JSON · ruta /api correspondiente",
+      "direction": "outgoing",
+      "labels": {
+        "vista": "C2"
+      }
     },
     {
-      "id": "conn-frontend-gateway",
-      "originId": "frontend",
+      "id": "conn-gateway-tc",
+      "originId": "gateway",
+      "targetId": "tc",
+      "name": "HTTP JSON · entrada al controlador",
+      "direction": "outgoing",
+      "labels": {
+        "vista": "C3"
+      }
+    },
+    {
+      "id": "conn-tc-ts",
+      "originId": "tc",
+      "targetId": "ts",
+      "name": "DTO de solicitud validado",
+      "direction": "outgoing",
+      "labels": {
+        "vista": "C3"
+      }
+    },
+    {
+      "id": "conn-tc-tax-input",
+      "originId": "tc",
+      "targetId": "tax-input",
+      "name": "Valida RUC y deriva cédula natural",
+      "direction": "outgoing",
+      "labels": {
+        "vista": "C3"
+      }
+    },
+    {
+      "id": "conn-tax-errors-tc",
+      "originId": "tax-errors",
+      "targetId": "tc",
+      "name": "Advice MVC: transforma excepciones en respuestas HTTP",
+      "direction": "outgoing",
+      "labels": {
+        "vista": "C3"
+      }
+    },
+    {
+      "id": "conn-ts-ta",
+      "originId": "ts",
+      "targetId": "ta",
+      "name": "Consulta existencia y datos oficiales",
+      "direction": "outgoing",
+      "labels": {
+        "vista": "C3"
+      }
+    },
+    {
+      "id": "conn-ta-sri",
+      "originId": "ta",
+      "targetId": "sri",
+      "name": "HTTPS JSON · SRI oficial",
+      "direction": "outgoing",
+      "labels": {
+        "vista": "C3"
+      }
+    },
+    {
+      "id": "conn-gateway-car",
+      "originId": "gateway",
+      "targetId": "car",
+      "name": "POST JSON · ruta /api correspondiente",
+      "direction": "outgoing",
+      "labels": {
+        "vista": "C2"
+      }
+    },
+    {
+      "id": "conn-gateway-vc",
+      "originId": "gateway",
+      "targetId": "vc",
+      "name": "HTTP JSON · entrada al controlador",
+      "direction": "outgoing",
+      "labels": {
+        "vista": "C3"
+      }
+    },
+    {
+      "id": "conn-vc-vs",
+      "originId": "vc",
+      "targetId": "vs",
+      "name": "DTO de solicitud validado",
+      "direction": "outgoing",
+      "labels": {
+        "vista": "C3"
+      }
+    },
+    {
+      "id": "conn-car-errors-vc",
+      "originId": "car-errors",
+      "targetId": "vc",
+      "name": "Advice MVC: transforma excepciones en respuestas HTTP",
+      "direction": "outgoing",
+      "labels": {
+        "vista": "C3"
+      }
+    },
+    {
+      "id": "conn-vs-va",
+      "originId": "vs",
+      "targetId": "va",
+      "name": "Consulta existencia y datos oficiales",
+      "direction": "outgoing",
+      "labels": {
+        "vista": "C3"
+      }
+    },
+    {
+      "id": "conn-va-sri",
+      "originId": "va",
+      "targetId": "sri",
+      "name": "HTTPS JSON · SRI oficial",
+      "direction": "outgoing",
+      "labels": {
+        "vista": "C3"
+      }
+    },
+    {
+      "id": "conn-gateway-lic",
+      "originId": "gateway",
+      "targetId": "lic",
+      "name": "POST JSON · ruta /api correspondiente",
+      "direction": "outgoing",
+      "labels": {
+        "vista": "C2"
+      }
+    },
+    {
+      "id": "conn-gateway-lc",
+      "originId": "gateway",
+      "targetId": "lc",
+      "name": "HTTP JSON · entrada al controlador",
+      "direction": "outgoing",
+      "labels": {
+        "vista": "C3"
+      }
+    },
+    {
+      "id": "conn-lc-ls",
+      "originId": "lc",
+      "targetId": "ls",
+      "name": "DTO de solicitud validado",
+      "direction": "outgoing",
+      "labels": {
+        "vista": "C3"
+      }
+    },
+    {
+      "id": "conn-lc-lic-input",
+      "originId": "lc",
+      "targetId": "lic-input",
+      "name": "Valida RUC y deriva cédula natural",
+      "direction": "outgoing",
+      "labels": {
+        "vista": "C3"
+      }
+    },
+    {
+      "id": "conn-lic-errors-lc",
+      "originId": "lic-errors",
+      "targetId": "lc",
+      "name": "Advice MVC: transforma excepciones en respuestas HTTP",
+      "direction": "outgoing",
+      "labels": {
+        "vista": "C3"
+      }
+    },
+    {
+      "id": "conn-ls-la",
+      "originId": "ls",
+      "targetId": "la",
+      "name": "Circuit Breaker Resilience4j · consulta si caché no fresca",
+      "direction": "outgoing",
+      "labels": {
+        "vista": "C3"
+      }
+    },
+    {
+      "id": "conn-la-ant",
+      "originId": "la",
+      "targetId": "ant",
+      "name": "HTTPS HTML · Jsoup · sin selector aún verificado",
+      "direction": "outgoing",
+      "labels": {
+        "vista": "C3"
+      }
+    },
+    {
+      "id": "conn-user-sys",
+      "originId": "user",
+      "targetId": "sys",
+      "name": "Consulta información autorizada mediante interfaz web",
+      "direction": "outgoing",
+      "labels": {
+        "vista": "C1"
+      }
+    },
+    {
+      "id": "conn-sys-sri",
+      "originId": "sys",
+      "targetId": "sri",
+      "name": "Consulta contribuyente, vehículo y rubros por HTTPS",
+      "direction": "outgoing",
+      "labels": {
+        "vista": "C1"
+      }
+    },
+    {
+      "id": "conn-sys-ant",
+      "originId": "sys",
+      "targetId": "ant",
+      "name": "Consulta puntos por HTTPS; indisponibilidad controlada",
+      "direction": "outgoing",
+      "labels": {
+        "vista": "C1"
+      }
+    },
+    {
+      "id": "conn-user-web",
+      "originId": "user",
+      "targetId": "web",
+      "name": "Navegador HTTP local :4200",
+      "direction": "outgoing",
+      "labels": {
+        "vista": "C2"
+      }
+    },
+    {
+      "id": "conn-web-gateway",
+      "originId": "web",
       "targetId": "gateway",
-      "name": "HTTP JSON · /api",
-      "direction": "outgoing"
+      "name": "HTTP JSON /api · proxy Angular o nginx",
+      "direction": "outgoing",
+      "labels": {
+        "vista": "C2"
+      }
     },
     {
-      "id": "conn-gateway-contribuyentes",
-      "originId": "gateway",
-      "targetId": "contribuyentes",
-      "name": "HTTP JSON",
-      "direction": "outgoing"
-    },
-    {
-      "id": "conn-gateway-vehiculos",
-      "originId": "gateway",
-      "targetId": "vehiculos",
-      "name": "HTTP JSON",
-      "direction": "outgoing"
-    },
-    {
-      "id": "conn-gateway-licencias",
-      "originId": "gateway",
-      "targetId": "licencias",
-      "name": "HTTP JSON",
-      "direction": "outgoing"
-    },
-    {
-      "id": "conn-contribuyentes-sri",
-      "originId": "contribuyentes",
+      "id": "conn-tax-sri",
+      "originId": "tax",
       "targetId": "sri",
-      "name": "HTTPS REST · contribuyentes",
-      "direction": "outgoing"
+      "name": "HTTPS REST · RUC",
+      "direction": "outgoing",
+      "labels": {
+        "vista": "C2"
+      }
     },
     {
-      "id": "conn-vehiculos-sri",
-      "originId": "vehiculos",
+      "id": "conn-car-sri",
+      "originId": "car",
       "targetId": "sri",
-      "name": "HTTPS REST · vehículos y rubros",
-      "direction": "outgoing"
+      "name": "HTTPS REST · placa, código real y rubros",
+      "direction": "outgoing",
+      "labels": {
+        "vista": "C2"
+      }
     },
     {
-      "id": "conn-licencias-ant",
-      "originId": "licencias",
+      "id": "conn-lic-ant",
+      "originId": "lic",
       "targetId": "ant",
-      "name": "HTTPS HTML · timeout 5 s",
-      "direction": "outgoing"
+      "name": "HTTPS HTML · timeout 5 s; acceso no confirmado",
+      "direction": "outgoing",
+      "labels": {
+        "vista": "C2"
+      }
     },
     {
-      "id": "conn-licencias-redis",
-      "originId": "licencias",
+      "id": "conn-lic-redis",
+      "originId": "lic",
       "targetId": "redis",
-      "name": "RESP TCP sin TLS: solo sintéticos · HMAC · respaldo 24 h",
-      "direction": "outgoing"
+      "name": "RESP TCP sin TLS: solo pruebas sintéticas",
+      "direction": "outgoing",
+      "labels": {
+        "vista": "C2"
+      }
     },
     {
-      "id": "conn-contribuyentes-ContribuyenteController-contribuyentes-ContribuyenteService",
-      "originId": "contribuyentes-ContribuyenteController",
-      "targetId": "contribuyentes-ContribuyenteService",
-      "name": "DTO validado",
-      "direction": "outgoing"
-    },
-    {
-      "id": "conn-contribuyentes-ContribuyenteService-contribuyentes-SriClient",
-      "originId": "contribuyentes-ContribuyenteService",
-      "targetId": "contribuyentes-SriClient",
-      "name": "Consulta oficial",
-      "direction": "outgoing"
-    },
-    {
-      "id": "conn-contribuyentes-SriClient-sri",
-      "originId": "contribuyentes-SriClient",
-      "targetId": "sri",
-      "name": "HTTPS REST",
-      "direction": "outgoing"
-    },
-    {
-      "id": "conn-vehiculos-VehiculoController-vehiculos-VehiculoService",
-      "originId": "vehiculos-VehiculoController",
-      "targetId": "vehiculos-VehiculoService",
-      "name": "DTO validado",
-      "direction": "outgoing"
-    },
-    {
-      "id": "conn-vehiculos-VehiculoService-vehiculos-SriClient",
-      "originId": "vehiculos-VehiculoService",
-      "targetId": "vehiculos-SriClient",
-      "name": "Consulta oficial",
-      "direction": "outgoing"
-    },
-    {
-      "id": "conn-vehiculos-SriClient-sri",
-      "originId": "vehiculos-SriClient",
-      "targetId": "sri",
-      "name": "HTTPS REST",
-      "direction": "outgoing"
-    },
-    {
-      "id": "conn-licencias-LicenciaController-licencias-LicenciaService",
-      "originId": "licencias-LicenciaController",
-      "targetId": "licencias-LicenciaService",
-      "name": "DTO validado",
-      "direction": "outgoing"
-    },
-    {
-      "id": "conn-licencias-LicenciaService-licencias-AntClient",
-      "originId": "licencias-LicenciaService",
-      "targetId": "licencias-AntClient",
-      "name": "Circuit Breaker · 50%, 30 s",
-      "direction": "outgoing"
-    },
-    {
-      "id": "conn-licencias-LicenciaService-licencias-RedisCacheRepository",
-      "originId": "licencias-LicenciaService",
-      "targetId": "licencias-RedisCacheRepository",
+      "id": "conn-ls-lr",
+      "originId": "ls",
+      "targetId": "lr",
       "name": "Cache-Aside 15 min · Fallback hasta 24 h",
-      "direction": "outgoing"
+      "direction": "outgoing",
+      "labels": {
+        "vista": "C3"
+      }
     },
     {
-      "id": "conn-licencias-RedisCacheRepository-redis",
-      "originId": "licencias-RedisCacheRepository",
+      "id": "conn-lr-redis",
+      "originId": "lr",
       "targetId": "redis",
-      "name": "GET/SET · TTL restante hasta 24 h · HMAC · sin TLS solo UUID sintéticos",
-      "direction": "outgoing"
-    },
-    {
-      "id": "conn-licencias-AntClient-ant",
-      "originId": "licencias-AntClient",
-      "targetId": "ant",
-      "name": "HTTP + Jsoup · selector verificado requerido",
-      "direction": "outgoing"
+      "name": "HMAC · TTL restante 24 h · bloqueo de datos personales sin TLS",
+      "direction": "outgoing",
+      "labels": {
+        "vista": "C3"
+      }
     }
   ]
 }
