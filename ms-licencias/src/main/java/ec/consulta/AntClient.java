@@ -5,9 +5,13 @@ import org.springframework.stereotype.Component;import org.springframework.beans
  private final String url,selector;private final HttpClient http=HttpClient.newBuilder().connectTimeout(Duration.ofSeconds(5)).build();
  public AntClient(@Value("${ant.url}") String url,@Value("${ant.points-selector}") String selector){this.url=url;this.selector=selector;}
  public int consultar(String cedula){
-  if(selector.isBlank())throw new ApiException(503,"La estructura HTML de la ANT aún no ha podido verificarse.");
   try{var req=HttpRequest.newBuilder(URI.create(url+"?ps_tipo_identificacion=CED&ps_identificacion="+cedula+"&ps_placa=")).timeout(Duration.ofSeconds(5)).header("Accept","text/html").GET().build();
-   var res=http.send(req,HttpResponse.BodyHandlers.ofString());if(res.statusCode()!=200||res.body().length()>2000000)throw new ApiException(503,"La ANT no está disponible.");return parse(res.body(),selector);
+   var res=http.send(req,HttpResponse.BodyHandlers.ofString());
+   if(res.statusCode()==401||res.statusCode()==403)throw new ApiException(503,"La ANT restringió el acceso (HTTP "+res.statusCode()+"). Se requiere acceso autorizado del proveedor.");
+   if(res.statusCode()==502)throw new ApiException(503,"El gateway de la ANT no pudo obtener una respuesta válida de su servicio interno (HTTP 502).");
+   if(res.statusCode()!=200||res.body().length()>2000000)throw new ApiException(503,"La ANT no está disponible.");
+   if(selector.isBlank())throw new ApiException(503,"La ANT respondió, pero aún no se ha podido verificar su selector HTML de puntos.");
+   return parse(res.body(),selector);
   }catch(ApiException e){throw e;}catch(InterruptedException e){Thread.currentThread().interrupt();throw new ApiException(503,"Consulta interrumpida.");}catch(Exception e){throw new ApiException(503,"No fue posible consultar la ANT.");}
  }
  static int parse(String html,String selector){

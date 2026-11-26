@@ -58,7 +58,7 @@
       "type": "system",
       "parentId": "dom",
       "caption": "Portal externo HTTPS / HTML",
-      "description": "Inspección pendiente: inicialmente HTTP 401; revisión del 26/11/2026 devolvió HTTP 502. Sin selector HTML verificado. El cliente informa indisponibilidad y conserva el fallback.",
+      "description": "Portal oficial de consultas: HTTP 502 confirmado en Edge y cliente HTTP; la web principal ANT responde HTTP 200 y enlaza al mismo portal. El HTTP 401 inicial indicó rechazo de acceso, sin poder determinar su causa interna. Se conserva URL del docente, diagnóstico diferenciado y fallback. Selector real aún sin verificar.",
       "labels": {
         "tecnologias": "No aplica"
       },
@@ -374,7 +374,7 @@
       "type": "component",
       "parentId": "lic",
       "caption": "Java HttpClient / Jsoup 1.21.2",
-      "description": "Consulta la URL oficial ANT solo con selector verificado configurado; timeout de conexión y solicitud 5 s; rechaza restricciones, CAPTCHA y valores inválidos.",
+      "description": "Consulta la URL oficial ANT por Java HttpClient; distingue 401/403 de 502. Timeout de conexión y solicitud 5 s. Solo interpreta HTML 200 con selector verificado configurado; rechaza restricciones, CAPTCHA y valores inválidos. Las simulaciones HTTP y el selector sintético existen exclusivamente en tests.",
       "labels": {
         "tecnologias": "Java, Jsoup",
         "codigo": "ms-licencias/src/main/java/ec/consulta/AntClient.java"

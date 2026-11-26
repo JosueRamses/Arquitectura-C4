@@ -46,7 +46,7 @@ if (repository) system.links = [link(repository,'Repositorio GitHub'), link(repo
 const sri = object('sri','SRI','system','dom','Servicio externo HTTPS / REST','Existencia y datos del contribuyente, vehículo y rubros. No se inventan resultados.');
 sri.external = true;
 sri.links = [link('https://srienlinea.sri.gob.ec/','SRI en línea')];
-const ant = object('ant','ANT','system','dom','Portal externo HTTPS / HTML','Inspección pendiente: inicialmente HTTP 401; revisión del 26/11/2026 devolvió HTTP 502. Sin selector HTML verificado. El cliente informa indisponibilidad y conserva el fallback.');
+const ant = object('ant','ANT','system','dom','Portal externo HTTPS / HTML','Portal oficial de consultas: HTTP 502 confirmado en Edge y cliente HTTP; la web principal ANT responde HTTP 200 y enlaza al mismo portal. El HTTP 401 inicial indicó rechazo de acceso, sin poder determinar su causa interna. Se conserva URL del docente, diagnóstico diferenciado y fallback. Selector real aún sin verificar.');
 ant.external = true;
 ant.links = [link('https://consultaweb.ant.gob.ec/PortalWEB/','Portal oficial de consultas ANT')];
 object('web','Frontend Angular','app','sys','Angular 20.3 / TypeScript 5.9 · HTTP :4200','Formularios progresivos en español, validaciones, datos oficiales, dólares, carga, errores y estado de caché. Consume solo /api del Gateway.','frontend-angular',['Angular','TypeScript']);
@@ -65,7 +65,7 @@ for (const d of definitions) {
   object(d.ids[1],d.service,'component',d.id,d.id==='lic'?'Resilience4j 2.3.0 / Cache-Aside / Fallback':'Lógica de consulta',
     d.id==='lic'?'Lee Redis antes de ANT. Respuesta válida de cero puntos distinta de error. Ante fallo recupera el respaldo vigente y marca desactualizado; sin respaldo informa indisponibilidad. No prolonga TTL.':'Coordina consultas oficiales, valida la respuesta y devuelve DTOs. No usa fixtures en producción.',base+d.service+'.java',['Java',...(d.id==='lic'?['Resilience4j']:[])]);
   object(d.ids[2],d.client,'component',d.id,d.id==='lic'?'Java HttpClient / Jsoup 1.21.2':'Java HttpClient / Jackson',
-    d.id==='lic'?'Consulta la URL oficial ANT solo con selector verificado configurado; timeout de conexión y solicitud 5 s; rechaza restricciones, CAPTCHA y valores inválidos.':'Cliente HTTPS SRI con timeout y comprobación HTTP/JSON; no registra datos personales.',base+d.client+'.java',['Java',...(d.id==='lic'?['Jsoup']:[])]);
+    d.id==='lic'?'Consulta la URL oficial ANT por Java HttpClient; distingue 401/403 de 502. Timeout de conexión y solicitud 5 s. Solo interpreta HTML 200 con selector verificado configurado; rechaza restricciones, CAPTCHA y valores inválidos. Las simulaciones HTTP y el selector sintético existen exclusivamente en tests.':'Cliente HTTPS SRI con timeout y comprobación HTTP/JSON; no registra datos personales.',base+d.client+'.java',['Java',...(d.id==='lic'?['Jsoup']:[])]);
   if(d.id!=='car') object(d.id+'-input','Input','component',d.id,'Validación ecuatoriana','Valida RUC natural, cédula y dígito verificador en el backend.',base+'Input.java',['Java']);
   object(d.id+'-errors','Errors','component',d.id,'RestControllerAdvice / ApiException','Manejo centralizado de validación, errores de dominio y fallos externos sin datos personales en mensajes técnicos.',base+'Errors.java',['Spring Boot','Java']);
   connection('gateway',d.id,'POST JSON · ruta /api correspondiente','C2');

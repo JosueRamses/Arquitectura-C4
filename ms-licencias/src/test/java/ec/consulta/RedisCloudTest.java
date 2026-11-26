@@ -10,6 +10,30 @@ class RedisCloudTest {
   return new RedisCacheRepository(new ObjectMapper().findAndRegisterModules(),System.getenv("REDIS_HOST"),Integer.parseInt(System.getenv("REDIS_PORT")),System.getenv().getOrDefault("REDIS_USERNAME","default"),password,Boolean.parseBoolean(System.getenv().getOrDefault("REDIS_SSL","false")),System.getenv("CACHE_HMAC_SECRET"),retention);
  }
  private String id(){return "synthetic:"+UUID.randomUUID();}
+ @Test void fourScenariosThroughRealJavaHttpAndJsoupWithRedisCloud()throws Exception{
+  var status=new java.util.concurrent.atomic.AtomicInteger(200);
+  var points=new java.util.concurrent.atomic.AtomicInteger(25);
+  var calls=new java.util.concurrent.atomic.AtomicInteger();
+  var server=com.sun.net.httpserver.HttpServer.create(new java.net.InetSocketAddress("127.0.0.1",0),0);
+  server.createContext("/ant",exchange->{calls.incrementAndGet();String html=status.get()==200?"<html><span id='synthetic-points'>"+points.get()+"</span></html>":"<html>Gateway failure in controlled test</html>";byte[] bytes=html.getBytes(java.nio.charset.StandardCharsets.UTF_8);exchange.getResponseHeaders().set("Content-Type","text/html; charset=UTF-8");exchange.sendResponseHeaders(status.get(),bytes.length);try(var out=exchange.getResponseBody()){out.write(bytes);}});
+  server.start();String id=id(),missing=id();
+  try(var cache=repository(Duration.ofHours(24))){try{
+   var ant=new AntClient("http://127.0.0.1:"+server.getAddress().getPort()+"/ant","#synthetic-points");
+   var service=new LicenciaService(cache,ant);
+   // 1. Controlled ANT is up: real HTTP -> Jsoup -> service -> real Redis Cloud.
+   var available=service.consultar(id);assertEquals("ANT",available.origen());assertEquals(25,available.puntos());assertEquals(25,cache.get(id).orElseThrow().puntos());assertTrue(cache.ttl(id)>86300);
+   int afterFirst=calls.get();var fresh=service.consultar(id);assertEquals("Redis Cloud",fresh.origen());assertEquals(afterFirst,calls.get(),"Cache-Aside no debe consultar ANT con datos frescos");
+   // 2. Preserve an older valid snapshot; ANT gateway is down.
+   Instant old=Instant.now().minusSeconds(960);assertTrue(cache.save(id,new CacheRepository.Entry(25,old)));status.set(502);
+   var fallback=service.consultar(id);assertEquals("Redis Cloud",fallback.origen());assertEquals(25,fallback.puntos());assertTrue(fallback.desactualizado());assertEquals(old,cache.get(id).orElseThrow().actualizadoEn());assertTrue(fallback.mensaje().contains("502"));
+   // 3. No previous snapshot: null points, no fabricated zero, no error persisted.
+   var absent=service.consultar(missing);assertNull(absent.puntos());assertEquals("NO_DISPONIBLE",absent.disponibilidad());assertTrue(cache.get(missing).isEmpty());
+   // 4. Same service, same circuit (not opened: 2/3 failures before minimum 4), ANT recovers.
+   status.set(200);points.set(18);var recovered=service.consultar(id);assertEquals("ANT",recovered.origen());assertEquals(18,recovered.puntos());assertFalse(recovered.desactualizado());var updated=cache.get(id).orElseThrow();assertEquals(18,updated.puntos());assertTrue(updated.actualizadoEn().isAfter(old));assertTrue(cache.ttl(id)>86300);
+   assertEquals(18,service.consultar(id).puntos());assertEquals("Redis Cloud",service.consultar(id).origen());
+   System.out.println("PASS Redis Cloud + Java HTTP + Jsoup: ANT disponible/guardado; cache-aside; ANT 502/fallback; ANT 502/sin respaldo; recuperación/actualización. Solo datos sintéticos; servidor ANT local exclusivo de test.");
+  }finally{cache.deleteSynthetic(id);cache.deleteSynthetic(missing);}}finally{server.stop(0);}
+ }
  @Test void pingWriteReadAndExpire()throws Exception{
   String id=id();try(var cache=repository(Duration.ofSeconds(3))){try{
    assertTrue(cache.ping(),"PING Redis Cloud debe responder PONG");var entry=new CacheRepository.Entry(0,Instant.now());
