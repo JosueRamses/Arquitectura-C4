@@ -31,7 +31,19 @@
       "description": "Validación SRI; datos vehiculares y rubros; consulta ANT con caché y resiliencia.",
       "labels": {
         "tecnologias": "No aplica"
-      }
+      },
+      "links": [
+        {
+          "id": "de47f5ace1571cb9399f",
+          "url": "https://github.com/JosueRamses/Arquitectura-C4",
+          "customName": "Repositorio GitHub"
+        },
+        {
+          "id": "6bb9437190b51d20e6be",
+          "url": "https://github.com/JosueRamses/Arquitectura-C4/blob/main/README.md",
+          "customName": "Ejecución y configuración"
+        }
+      ]
     },
     {
       "id": "sri",
@@ -82,6 +94,13 @@
         "tecnologias": "Angular, TypeScript",
         "codigo": "frontend-angular"
       },
+      "links": [
+        {
+          "id": "1796ae92b31a0274626b",
+          "url": "https://github.com/JosueRamses/Arquitectura-C4/tree/main/frontend-angular",
+          "customName": "Código implementado en GitHub"
+        }
+      ],
       "technologyIds": [
         "cvl7dwBbKnKMxuYpuEdM",
         "unq9eBvtMu9rTTSQqqUP"
@@ -101,6 +120,13 @@
         "tecnologias": "Spring Cloud Gateway, Spring Boot, Java",
         "codigo": "api-gateway"
       },
+      "links": [
+        {
+          "id": "0f5ca969421ac2769e65",
+          "url": "https://github.com/JosueRamses/Arquitectura-C4/tree/main/api-gateway",
+          "customName": "Código implementado en GitHub"
+        }
+      ],
       "technologyIds": [
         "f3Sxvw8kWztispAEydWO",
         "y0A4IinymBFl3GEKZXjM",
@@ -121,6 +147,13 @@
         "tecnologias": "Spring Boot, Java, Maven",
         "codigo": "ms-contribuyentes"
       },
+      "links": [
+        {
+          "id": "d335071fabdece330905",
+          "url": "https://github.com/JosueRamses/Arquitectura-C4/tree/main/ms-contribuyentes",
+          "customName": "Código implementado en GitHub"
+        }
+      ],
       "technologyIds": [
         "y0A4IinymBFl3GEKZXjM",
         "7NkfDiLzoYOcrpKn1Xda",
@@ -141,6 +174,13 @@
         "tecnologias": "Spring Boot, Java",
         "codigo": "ms-contribuyentes/src/main/java/ec/consulta/ContribuyenteController.java"
       },
+      "links": [
+        {
+          "id": "661583d261d0e640a288",
+          "url": "https://github.com/JosueRamses/Arquitectura-C4/blob/main/ms-contribuyentes/src/main/java/ec/consulta/ContribuyenteController.java",
+          "customName": "Código implementado en GitHub"
+        }
+      ],
       "technologyIds": [
         "7NkfDiLzoYOcrpKn1Xda"
       ],
@@ -159,6 +199,13 @@
         "tecnologias": "Java",
         "codigo": "ms-contribuyentes/src/main/java/ec/consulta/ContribuyenteService.java"
       },
+      "links": [
+        {
+          "id": "0d054c350c2ca1de0810",
+          "url": "https://github.com/JosueRamses/Arquitectura-C4/blob/main/ms-contribuyentes/src/main/java/ec/consulta/ContribuyenteService.java",
+          "customName": "Código implementado en GitHub"
+        }
+      ],
       "technologyIds": [
         "7NkfDiLzoYOcrpKn1Xda"
       ],
@@ -177,6 +224,13 @@
         "tecnologias": "Java",
         "codigo": "ms-contribuyentes/src/main/java/ec/consulta/SriClient.java"
       },
+      "links": [
+        {
+          "id": "849bb63e123632f42fec",
+          "url": "https://github.com/JosueRamses/Arquitectura-C4/blob/main/ms-contribuyentes/src/main/java/ec/consulta/SriClient.java",
+          "customName": "Código implementado en GitHub"
+        }
+      ],
       "technologyIds": [
         "7NkfDiLzoYOcrpKn1Xda"
       ],
@@ -195,6 +249,13 @@
         "tecnologias": "Java",
         "codigo": "ms-contribuyentes/src/main/java/ec/consulta/Input.java"
       },
+      "links": [
+        {
+          "id": "3089c75ac6a654dabd10",
+          "url": "https://github.com/JosueRamses/Arquitectura-C4/blob/main/ms-contribuyentes/src/main/java/ec/consulta/Input.java",
+          "customName": "Código implementado en GitHub"
+        }
+      ],
       "technologyIds": [
         "7NkfDiLzoYOcrpKn1Xda"
       ],
@@ -213,6 +274,13 @@
         "tecnologias": "Spring Boot, Java",
         "codigo": "ms-contribuyentes/src/main/java/ec/consulta/Errors.java"
       },
+      "links": [
+        {
+          "id": "bd54f2e7e5a371ed3b92",
+          "url": "https://github.com/JosueRamses/Arquitectura-C4/blob/main/ms-contribuyentes/src/main/java/ec/consulta/Errors.java",
+          "customName": "Código implementado en GitHub"
+        }
+      ],
       "technologyIds": [
         "7NkfDiLzoYOcrpKn1Xda"
       ],
@@ -231,6 +299,13 @@
         "tecnologias": "Spring Boot, Java, Maven",
         "codigo": "ms-vehiculos"
       },
+      "links": [
+        {
+          "id": "d8f4913aa6f9374d7c92",
+          "url": "https://github.com/JosueRamses/Arquitectura-C4/tree/main/ms-vehiculos",
+          "customName": "Código implementado en GitHub"
+        }
+      ],
       "technologyIds": [
         "y0A4IinymBFl3GEKZXjM",
         "7NkfDiLzoYOcrpKn1Xda",
@@ -251,6 +326,13 @@
         "tecnologias": "Spring Boot, Java",
         "codigo": "ms-vehiculos/src/main/java/ec/consulta/VehiculoController.java"
       },
+      "links": [
+        {
+          "id": "f188c8c0ce5989e68a4d",
+          "url": "https://github.com/JosueRamses/Arquitectura-C4/blob/main/ms-vehiculos/src/main/java/ec/consulta/VehiculoController.java",
+          "customName": "Código implementado en GitHub"
+        }
+      ],
       "technologyIds": [
         "7NkfDiLzoYOcrpKn1Xda"
       ],
@@ -269,6 +351,13 @@
         "tecnologias": "Java",
         "codigo": "ms-vehiculos/src/main/java/ec/consulta/VehiculoService.java"
       },
+      "links": [
+        {
+          "id": "ddd997993879e1374d94",
+          "url": "https://github.com/JosueRamses/Arquitectura-C4/blob/main/ms-vehiculos/src/main/java/ec/consulta/VehiculoService.java",
+          "customName": "Código implementado en GitHub"
+        }
+      ],
       "technologyIds": [
         "7NkfDiLzoYOcrpKn1Xda"
       ],
@@ -287,6 +376,13 @@
         "tecnologias": "Java",
         "codigo": "ms-vehiculos/src/main/java/ec/consulta/SriClient.java"
       },
+      "links": [
+        {
+          "id": "40bc298e16e15b5e2141",
+          "url": "https://github.com/JosueRamses/Arquitectura-C4/blob/main/ms-vehiculos/src/main/java/ec/consulta/SriClient.java",
+          "customName": "Código implementado en GitHub"
+        }
+      ],
       "technologyIds": [
         "7NkfDiLzoYOcrpKn1Xda"
       ],
@@ -305,6 +401,13 @@
         "tecnologias": "Spring Boot, Java",
         "codigo": "ms-vehiculos/src/main/java/ec/consulta/Errors.java"
       },
+      "links": [
+        {
+          "id": "13b8a6ba98608c0c73d4",
+          "url": "https://github.com/JosueRamses/Arquitectura-C4/blob/main/ms-vehiculos/src/main/java/ec/consulta/Errors.java",
+          "customName": "Código implementado en GitHub"
+        }
+      ],
       "technologyIds": [
         "7NkfDiLzoYOcrpKn1Xda"
       ],
@@ -323,6 +426,13 @@
         "tecnologias": "Spring Boot, Java, Maven",
         "codigo": "ms-licencias"
       },
+      "links": [
+        {
+          "id": "c0e6186560bc3754c96c",
+          "url": "https://github.com/JosueRamses/Arquitectura-C4/tree/main/ms-licencias",
+          "customName": "Código implementado en GitHub"
+        }
+      ],
       "technologyIds": [
         "y0A4IinymBFl3GEKZXjM",
         "7NkfDiLzoYOcrpKn1Xda",
@@ -343,6 +453,13 @@
         "tecnologias": "Spring Boot, Java",
         "codigo": "ms-licencias/src/main/java/ec/consulta/LicenciaController.java"
       },
+      "links": [
+        {
+          "id": "4d0a46e5e51f39ea7e2a",
+          "url": "https://github.com/JosueRamses/Arquitectura-C4/blob/main/ms-licencias/src/main/java/ec/consulta/LicenciaController.java",
+          "customName": "Código implementado en GitHub"
+        }
+      ],
       "technologyIds": [
         "7NkfDiLzoYOcrpKn1Xda"
       ],
@@ -361,6 +478,13 @@
         "tecnologias": "Java, Resilience4j",
         "codigo": "ms-licencias/src/main/java/ec/consulta/LicenciaService.java"
       },
+      "links": [
+        {
+          "id": "aa040a0bda96180f853c",
+          "url": "https://github.com/JosueRamses/Arquitectura-C4/blob/main/ms-licencias/src/main/java/ec/consulta/LicenciaService.java",
+          "customName": "Código implementado en GitHub"
+        }
+      ],
       "technologyIds": [
         "7NkfDiLzoYOcrpKn1Xda"
       ],
@@ -379,6 +503,13 @@
         "tecnologias": "Java, Jsoup",
         "codigo": "ms-licencias/src/main/java/ec/consulta/AntClient.java"
       },
+      "links": [
+        {
+          "id": "7255d137db3b0ba15eed",
+          "url": "https://github.com/JosueRamses/Arquitectura-C4/blob/main/ms-licencias/src/main/java/ec/consulta/AntClient.java",
+          "customName": "Código implementado en GitHub"
+        }
+      ],
       "technologyIds": [
         "7NkfDiLzoYOcrpKn1Xda"
       ],
@@ -397,6 +528,13 @@
         "tecnologias": "Java",
         "codigo": "ms-licencias/src/main/java/ec/consulta/Input.java"
       },
+      "links": [
+        {
+          "id": "1464859724e674c10d6c",
+          "url": "https://github.com/JosueRamses/Arquitectura-C4/blob/main/ms-licencias/src/main/java/ec/consulta/Input.java",
+          "customName": "Código implementado en GitHub"
+        }
+      ],
       "technologyIds": [
         "7NkfDiLzoYOcrpKn1Xda"
       ],
@@ -415,6 +553,13 @@
         "tecnologias": "Spring Boot, Java",
         "codigo": "ms-licencias/src/main/java/ec/consulta/Errors.java"
       },
+      "links": [
+        {
+          "id": "5d3370bcbfdf16caf162",
+          "url": "https://github.com/JosueRamses/Arquitectura-C4/blob/main/ms-licencias/src/main/java/ec/consulta/Errors.java",
+          "customName": "Código implementado en GitHub"
+        }
+      ],
       "technologyIds": [
         "7NkfDiLzoYOcrpKn1Xda"
       ],
@@ -433,6 +578,13 @@
         "tecnologias": "Java, Redis",
         "codigo": "ms-licencias/src/main/java/ec/consulta/RedisCacheRepository.java"
       },
+      "links": [
+        {
+          "id": "1d2ae0f9a886c4a0fb52",
+          "url": "https://github.com/JosueRamses/Arquitectura-C4/blob/main/ms-licencias/src/main/java/ec/consulta/RedisCacheRepository.java",
+          "customName": "Código implementado en GitHub"
+        }
+      ],
       "technologyIds": [
         "7NkfDiLzoYOcrpKn1Xda"
       ],
