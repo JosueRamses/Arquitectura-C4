@@ -593,7 +593,7 @@
       "type": "component",
       "parentId": "lic",
       "caption": "Spring Data Redis / Lettuce / HMAC-SHA256",
-      "description": "Implementa CacheRepository. GET/SET con TTL restante hasta 24 h desde la obtención. Sin TLS solo acepta synthetic:UUID; namespace de pruebas separado. Rechaza cédulas reales antes de acceder a Redis.",
+      "description": "Implementa CacheRepository. GET/SET con TTL restante hasta 24 h desde la obtención. Admite respuestas válidas de licencia con o sin TLS por configuración solicitada. Claves HMAC y namespace separado para synthetic:UUID. Los errores no se almacenan.",
       "labels": {
         "tecnologias": "Java, Redis",
         "codigo": "ms-licencias/src/main/java/ec/consulta/RedisCacheRepository.java"
@@ -623,7 +623,7 @@
       "type": "store",
       "parentId": "sys",
       "caption": "Redis Cloud · AWS · 30 MB · TCP :16824",
-      "description": "Caché administrada externamente que pertenece al sistema lógico Consulta Ciudadana. Configuración actual sin TLS: solo datos sintéticos. Datos personales bloqueados hasta usar transporte cifrado. Vigencia fresca 15 min; respaldo máximo 24 h desde la obtención. Claves HMAC-SHA256; valor limitado a puntos y fecha. Host y secretos solo en .env ignorado por Git.",
+      "description": "Caché administrada externamente que pertenece al sistema lógico Consulta Ciudadana. Configuración actual sin TLS; el responsable del proyecto autorizó almacenar respuestas reales válidas con este transporte. Vigencia fresca 15 min; respaldo máximo 24 h desde la obtención. Claves HMAC-SHA256; valor limitado a puntos y fecha. HMAC no cifra el transporte ni el valor. Host y secretos solo en .env ignorado por Git.",
       "labels": {
         "tecnologias": "Redis"
       },
@@ -1383,11 +1383,11 @@
       "targetId": "redis",
       "name": "Mantiene caché y último respaldo válido",
       "direction": "outgoing",
-      "description": "Aplica Cache-Aside, HMAC, frescura 15 min y retención 24 h. Sin TLS solo se permiten identificadores sintéticos; el almacenamiento de información personal queda bloqueado. Relación agregada de la vista C2; no representa una llamada adicional a las detalladas en niveles inferiores. Protocolo: RESP sobre TCP :16824 · sin TLS actual.",
+      "description": "Aplica Cache-Aside, HMAC, frescura 15 min y retención 24 h. Almacena puntos y fecha de respuestas válidas de licencia; la admisión de identificadores es independiente de TLS. No almacena fallos de ANT. Relación agregada de la vista C2; no representa una llamada adicional a las detalladas en niveles inferiores. Protocolo: RESP sobre TCP :16824 · sin TLS actual.",
       "labels": {
         "vista": "C2",
         "protocolo": "RESP sobre TCP :16824 · sin TLS actual",
-        "responsabilidad": "Aplica Cache-Aside, HMAC, frescura 15 min y retención 24 h. Sin TLS solo se permiten identificadores sintéticos; el almacenamiento de información personal queda bloqueado.",
+        "responsabilidad": "Aplica Cache-Aside, HMAC, frescura 15 min y retención 24 h. Almacena puntos y fecha de respuestas válidas de licencia; la admisión de identificadores es independiente de TLS. No almacena fallos de ANT.",
         "tipo": "agregacion C4"
       },
       "links": [
@@ -1440,11 +1440,11 @@
       "targetId": "redis",
       "name": "GET / SET con HMAC y expiración",
       "direction": "outgoing",
-      "description": "StringRedisTemplate ejecuta GET y SET con TTL restante hasta 24 h desde actualizadoEn. Las claves usan HMAC-SHA256 y namespaces separados. REDIS_SSL admite TLS, pero actualmente es false y se rechazan identificadores personales antes de cualquier operación. Protocolo: RESP sobre TCP :16824 · Spring Data Redis / Lettuce.",
+      "description": "StringRedisTemplate ejecuta GET y SET con TTL restante hasta 24 h desde actualizadoEn. Las claves usan HMAC-SHA256 y namespaces separados. REDIS_SSL controla únicamente el transporte; actualmente es false y admite el almacenamiento de respuestas personales válidas por decisión explícita del responsable del proyecto. Protocolo: RESP sobre TCP :16824 · Spring Data Redis / Lettuce.",
       "labels": {
         "vista": "C3",
         "protocolo": "RESP sobre TCP :16824 · Spring Data Redis / Lettuce",
-        "responsabilidad": "StringRedisTemplate ejecuta GET y SET con TTL restante hasta 24 h desde actualizadoEn. Las claves usan HMAC-SHA256 y namespaces separados. REDIS_SSL admite TLS, pero actualmente es false y se rechazan identificadores personales antes de cualquier operación.",
+        "responsabilidad": "StringRedisTemplate ejecuta GET y SET con TTL restante hasta 24 h desde actualizadoEn. Las claves usan HMAC-SHA256 y namespaces separados. REDIS_SSL controla únicamente el transporte; actualmente es false y admite el almacenamiento de respuestas personales válidas por decisión explícita del responsable del proyecto.",
         "tipo": "invocacion"
       },
       "links": [

@@ -32,7 +32,7 @@ flowchart LR
   tax -->|"HTTPS REST · RUC"| sri
   car -->|"HTTPS REST · placa, código real y rubros"| sri
   lic -->|"HTTPS HTML · timeout 5 s; acceso no confirmado"| ant
-  lic -->|"RESP TCP sin TLS: solo pruebas sintéticas"| redis
+  lic -->|"RESP TCP sin TLS · puntos válidos y fecha · HMAC · TTL"| redis
 ```
 
 ## C3-contribuyentes
@@ -91,5 +91,5 @@ flowchart LR
   ls -->|"Circuit Breaker Resilience4j · consulta si caché no fresca"| la
   la -->|"HTTPS HTML · Jsoup · sin selector aún verificado"| ant
   ls -->|"Cache-Aside 15 min · Fallback hasta 24 h"| lr
-  lr -->|"HMAC · TTL restante 24 h · bloqueo de datos personales sin TLS"| redis
+  lr -->|"HMAC · TTL restante 24 h · respuestas válidas con o sin TLS"| redis
 ```

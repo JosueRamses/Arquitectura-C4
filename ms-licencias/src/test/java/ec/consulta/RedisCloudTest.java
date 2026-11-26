@@ -57,5 +57,16 @@ class RedisCloudTest {
    assertEquals(0,new LicenciaService(cache,ant).consultar(id).puntos());assertEquals(0,cache.get(id).orElseThrow().puntos());
   }finally{cache.deleteSynthetic(id);}}
  }
- @Test void nonTlsNeverReadsOrWritesPersonalIdentifiers(){try(var cache=repository(Duration.ofHours(24))){if(!Boolean.parseBoolean(System.getenv().getOrDefault("REDIS_SSL","false"))){assertFalse(cache.permitted("0000000000"));assertFalse(cache.save("0000000000",new CacheRepository.Entry(30,Instant.now())));assertTrue(cache.get("0000000000").isEmpty());}}}
+ @Test void configuredTransportCachesNormalNamespaceAndExpiresFixture()throws Exception{
+  // Province 00 is invalid: this random fixture cannot be a real Ecuadorian cédula.
+  String fixture="00"+String.format(java.util.Locale.ROOT,"%08d",java.util.concurrent.ThreadLocalRandom.current().nextInt(100000000));
+  try(var cache=repository(Duration.ofSeconds(3))){
+   assertTrue(cache.permitted(fixture));assertTrue(cache.key(fixture).matches("licencia:v1:[0-9a-f]{64}"));
+   var ant=mock(AntClient.class);when(ant.consultar(fixture)).thenReturn(0);var service=new LicenciaService(cache,ant);
+   var first=service.consultar(fixture);assertEquals("ANT",first.origen());assertEquals("Consulta oficial actualizada.",first.mensaje());
+   assertEquals(0,cache.get(fixture).orElseThrow().puntos());assertTrue(cache.ttl(fixture)>=0&&cache.ttl(fixture)<=3);
+   assertEquals("Redis Cloud",service.consultar(fixture).origen());verify(ant,times(1)).consultar(fixture);
+   Thread.sleep(3200);assertEquals(-2,cache.ttl(fixture));assertTrue(cache.get(fixture).isEmpty());
+  }
+ }
 }

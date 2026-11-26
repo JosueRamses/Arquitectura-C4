@@ -10,7 +10,7 @@ import io.github.resilience4j.circuitbreaker.*;
  public LicenseResult consultar(String cedula){
   Instant now=clock.instant();Optional<CacheRepository.Entry> saved=cache.get(cedula).filter(e->!e.actualizadoEn().isAfter(now)&&e.actualizadoEn().plus(Duration.ofHours(24)).isAfter(now));
   if(saved.isPresent()&&saved.get().actualizadoEn().plus(Duration.ofMinutes(15)).isAfter(now))return result(saved.get(),"Redis Cloud",false,"NO_CONSULTADO","Información vigente en caché; ANT no consultada.");
-  try{int points=circuit.executeSupplier(()->ant.consultar(cedula));var e=new CacheRepository.Entry(points,now);boolean stored=cache.save(cedula,e);String notice=cache instanceof RedisCacheRepository repository&&!repository.tlsEnabled()&&!RedisCacheRepository.synthetic(cedula)?"Consulta oficial válida; respaldo de datos personales bloqueado hasta habilitar TLS en Redis Cloud.":"Consulta oficial válida; Redis Cloud no disponible para guardar respaldo.";return result(e,"ANT",false,"DISPONIBLE",stored?"Consulta oficial actualizada.":notice);}
+  try{int points=circuit.executeSupplier(()->ant.consultar(cedula));var e=new CacheRepository.Entry(points,now);boolean stored=cache.save(cedula,e);return result(e,"ANT",false,"DISPONIBLE",stored?"Consulta oficial actualizada.":"Consulta oficial válida; Redis Cloud no disponible para guardar respaldo.");}
   catch(Exception e){String reason=unavailabilityReason(e);if(saved.isPresent())return result(saved.get(),"Redis Cloud",true,"NO_DISPONIBLE",reason+" Se muestra la última respuesta válida.");return new LicenseResult(null,null,null,false,"NO_DISPONIBLE",reason+" No existe una respuesta válida almacenada.");}
  }
  private String unavailabilityReason(Exception error){
