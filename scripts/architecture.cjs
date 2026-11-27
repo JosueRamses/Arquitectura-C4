@@ -5,7 +5,9 @@ const {execFileSync} = require('child_process');
 const root = path.resolve(__dirname, '..');
 const dir = path.join(root, 'docs/arquitectura');
 const target = path.join(dir, 'icepanel-import.json');
-const existing = fs.existsSync(target) ? JSON.parse(fs.readFileSync(target, 'utf8')) : {};
+const source = process.argv[2] ? path.resolve(process.argv[2]) : target;
+if(process.argv[2] && !fs.existsSync(source)) throw Error('No existe el archivo de arquitectura de origen.');
+const existing = fs.existsSync(source) ? JSON.parse(fs.readFileSync(source, 'utf8')) : {};
 const technologies = JSON.parse(fs.readFileSync(path.join(__dirname, 'icepanel-technologies.json'), 'utf8'));
 const objects = [], connections = [];
 
@@ -119,5 +121,5 @@ connection('lic','redis','Mantiene caché y último respaldo válido','C2','RESP
 connection('ls','lr','Cache-Aside y Fallback sobre CacheRepository','C3','Java en proceso / interfaz CacheRepository','Invoca cache.get antes de consultar ANT. Si la respuesta es fresca, la devuelve; si no, intenta actualizar. Tras una respuesta válida llama cache.save. Si ANT falla, usa el respaldo leído previamente hasta 24 h, sin prolongar su TTL; sin respaldo retorna puntos null.',[licenseBase+'LicenciaService.java',licenseBase+'CacheRepository.java',licenseBase+'RedisCacheRepository.java']);
 connection('lr','redis','GET / SET con HMAC y expiración','C3','RESP sobre TCP :16824 · Spring Data Redis / Lettuce','StringRedisTemplate ejecuta GET y SET con TTL restante hasta 24 h desde actualizadoEn. Las claves usan HMAC-SHA256 y namespaces separados. REDIS_SSL controla únicamente el transporte; actualmente es false y admite el almacenamiento de respuestas personales válidas por decisión explícita del responsable del proyecto.',[licenseBase+'RedisCacheRepository.java','ms-licencias/src/main/resources/application.yml']);
 
-fs.writeFileSync(target, JSON.stringify({namespace:'consulta-ciudadana-sri-ant',modelObjects:objects,modelConnections:connections},null,2)+'\n');
+fs.writeFileSync(target, JSON.stringify({...(existing.namespace ? {namespace:existing.namespace} : {}),modelObjects:objects,modelConnections:connections},null,2)+'\n');
 console.log(JSON.stringify({objects:objects.length,connections:connections.length,github:repository || 'Pendiente: no hay remoto configurado',preservedIds:(existing.modelObjects||[]).filter(o=>objects.some(n=>n.id===o.id)).length}));

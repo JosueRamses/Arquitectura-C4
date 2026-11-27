@@ -10,7 +10,8 @@ async function schema(url){
  const ajv=new Ajv({strict:false,allErrors:true,loadSchema:schema});addFormats(ajv);
  const official=await schema('https://api.icepanel.io/v1/schemas/LandscapeImportData');
  const validate=await ajv.compileAsync(official);
- const data=JSON.parse(fs.readFileSync(path.join(dir,'icepanel-import.json')));
+ const target=process.argv[2]?path.resolve(process.argv[2]):path.join(dir,'icepanel-import.json');
+ const data=JSON.parse(fs.readFileSync(target));
  if(!validate(data))throw Error(JSON.stringify(validate.errors,null,2));
  const ids=new Set(data.modelObjects.map(o=>o.id));
  if(ids.size!==data.modelObjects.length)throw Error('IDs de objetos duplicados');
@@ -34,6 +35,13 @@ async function schema(url){
   const pair=[c.originId,c.targetId,c.labels.vista].join('|');
   if(pairs.has(pair))throw Error('Relación duplicada: '+c.id);
   pairs.add(pair);
+ }
+ const root=path.resolve(__dirname,'..');
+ for(const item of [...data.modelObjects,...data.modelConnections])for(const link of item.links||[]){
+  const url=new URL(link.url);if(url.hostname!=='github.com')continue;
+  const match=url.pathname.match(/^\/JosueRamses\/Arquitectura-C4\/(?:blob|tree)\/main\/(.+)$/);if(!match)continue;
+  const source=path.resolve(root,decodeURIComponent(match[1]));
+  if(!source.startsWith(root+path.sep)||!fs.existsSync(source))throw Error('Enlace GitHub sin archivo implementado: '+link.url);
  }
  const result={validatedAt:new Date().toISOString(),schema:official.$id,valid:true,objects:data.modelObjects.length,connections:data.modelConnections.length};
  console.log(result);

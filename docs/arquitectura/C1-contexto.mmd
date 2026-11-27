@@ -1,8 +1,0 @@
-flowchart LR
-  user["Ciudadano · Navegador web"]
-  sys["Consulta Ciudadana · Angular + Gateway + tres microservicios"]
-  sri["SRI · Servicio externo HTTPS / REST"]
-  ant["ANT · Portal externo HTTPS / HTML"]
-  user -->|"Consulta información autorizada mediante interfaz web"| sys
-  sys -->|"Consulta contribuyente, vehículo y rubros por HTTPS"| sri
-  sys -->|"Consulta puntos por HTTPS; indisponibilidad controlada"| ant

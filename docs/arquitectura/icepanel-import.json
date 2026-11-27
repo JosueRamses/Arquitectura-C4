@@ -1,5 +1,4 @@
 {
-  "namespace": "consulta-ciudadana-sri-ant",
   "modelObjects": [
     {
       "id": "dom",
@@ -60,14 +59,14 @@
       "labels": {
         "tecnologias": "No aplica"
       },
+      "external": true,
       "links": [
         {
           "id": "ad11643afea48a1cdde2",
           "url": "https://srienlinea.sri.gob.ec/",
           "customName": "SRI en línea"
         }
-      ],
-      "external": true
+      ]
     },
     {
       "id": "ant",
@@ -79,14 +78,14 @@
       "labels": {
         "tecnologias": "No aplica"
       },
+      "external": true,
       "links": [
         {
           "id": "b46f0924ea265d1150dd",
           "url": "https://consultaweb.ant.gob.ec/PortalWEB/",
           "customName": "Portal oficial de consultas ANT"
         }
-      ],
-      "external": true
+      ]
     },
     {
       "id": "web",
@@ -627,6 +626,13 @@
       "labels": {
         "tecnologias": "Redis"
       },
+      "technologyIds": [
+        "Yj8CPPXztMD4nMBi04y8"
+      ],
+      "icon": {
+        "technologyId": "Yj8CPPXztMD4nMBi04y8"
+      },
+      "external": true,
       "links": [
         {
           "id": "a634fbef7c0b461bca83",
@@ -638,14 +644,7 @@
           "url": "https://github.com/JosueRamses/Arquitectura-C4/blob/main/.env.example",
           "customName": "Plantilla de configuración sin secretos"
         }
-      ],
-      "technologyIds": [
-        "Yj8CPPXztMD4nMBi04y8"
-      ],
-      "icon": {
-        "technologyId": "Yj8CPPXztMD4nMBi04y8"
-      },
-      "external": true
+      ]
     }
   ],
   "modelConnections": [
