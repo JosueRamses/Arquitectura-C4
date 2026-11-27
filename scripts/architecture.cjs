@@ -56,7 +56,8 @@ const citizen = object('user','Ciudadano','actor','dom','Navegador web','Ingresa
 const system = object('sys','Consulta Ciudadana','system','dom','Angular + Gateway + tres microservicios','Validación SRI; datos vehiculares y rubros; consulta ANT con caché y resiliencia.');
 system.links = [
   ...(repository ? [link(repository,'Repositorio GitHub'), link(repository+'/blob/main/README.md','Ejecución y configuración')] : []),
-  link('https://app.icepanel.io/landscapes/lVKZwtzKhdmHBegF2hOi/versions/latest/model/viewer','Landscape IcePanel existente')
+  link('https://app.icepanel.io/landscapes/lVKZwtzKhdmHBegF2hOi/versions/latest/model/viewer','Landscape IcePanel existente'),
+  link('https://s.icepanel.io/PCNIhUltvHmc9o/AHYs','Diagrama C4 compartido en IcePanel')
 ];
 const sri = object('sri','SRI','system','dom','Servicio externo HTTPS / REST','Existencia y datos del contribuyente, vehículo y rubros. No se inventan resultados.');
 sri.external = true;

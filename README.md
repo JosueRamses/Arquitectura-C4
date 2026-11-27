@@ -3,6 +3,7 @@
 Proyecto de ISWZ2202 — Diseño y Arquitectura de Software. Permite verificar contribuyentes naturales, consultar información vehicular y valores de matrícula del SRI, y consultar puntos de licencia de la ANT con respaldo en Redis Cloud.
 
 - [Repositorio GitHub](https://github.com/JosueRamses/Arquitectura-C4)
+- [Diagrama C4 compartido en IcePanel](https://s.icepanel.io/PCNIhUltvHmc9o/AHYs)
 - [Landscape IcePanel existente](https://app.icepanel.io/landscapes/lVKZwtzKhdmHBegF2hOi/versions/latest/model/viewer)
 - [JSON definitivo de importación C4](docs/arquitectura/icepanel-import.json)
 
